@@ -1,2 +1,0 @@
-# elatelecom
-telecommunications trading site
