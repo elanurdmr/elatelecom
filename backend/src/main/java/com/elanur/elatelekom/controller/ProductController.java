@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "http://localhost:3000") 
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -37,7 +38,6 @@ public class ProductController {
         service.deleteProduct(id);
     }
 
-    // MongoDB bağlantısını test etmek için ekle
     @GetMapping("/test-mongo")
     public String testMongoConnection() {
         long count = service.getAllProducts().size();

@@ -1,12 +1,17 @@
-import React from 'react';
-import ProductList from './ProductList';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Products from "./pages/Products";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Telekom Ürünleri</h1>
-      <ProductList />
-    </div>
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/products" element={<Products />} />
+      </Routes>
+    </Router>
   );
 }
 
