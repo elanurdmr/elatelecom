@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Service
 public class ProductService {
+
     private final ProductRepository repository;
 
     public ProductService(ProductRepository repository) {
@@ -27,6 +28,7 @@ public class ProductService {
         return repository.save(product);
     }
 
+    // Burada da id String olmalı
     public void deleteProduct(String id) {
         repository.deleteById(id);
     }
