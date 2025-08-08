@@ -1,4 +1,3 @@
-// Navbar.jsx dosyasında
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaStar, FaShoppingCart, FaUser } from 'react-icons/fa';
