@@ -11,6 +11,7 @@ const ProductList = () => {
   useEffect(() => {
     fetch('http://localhost:8080/api/products')
       .then(res => {
+        console.log("Response:", res);
         if (!res.ok) {
           throw new Error("Sunucu hatası");
         }

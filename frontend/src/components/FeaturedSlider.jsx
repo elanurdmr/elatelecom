@@ -3,7 +3,7 @@ import './FeaturedSlider.css';
 
 const slides = [
   { id: 1, title: 'Fiber Hızında İnternet', text: 'Kesintisiz bağlantı ve yüksek hız', cta: 'Hemen Başla', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1600&auto=format&fit=crop' },
-  { id: 2, title: 'Kurumsal Çözümler', text: 'İşletmeniz için güvenilir altyapı', cta: 'Teklif Al', image: 'https://images.unsplash.com/photo-1527443154391-507e9dc6c5cc?q=80&w=1600&auto=format&fit=crop' },
+  { id: 2, title: 'Kurumsal Cihazlar', text: 'İşletmeniz için güvenilir gereçler', cta: 'Teklif Al', image: 'https://images.unsplash.com/photo-1527443154391-507e9dc6c5cc?q=80&w=1600&auto=format&fit=crop' },
   { id: 3, title: 'Uygun Fiyatlar', text: 'Her bütçeye uygun paketler', cta: 'Paketleri Gör', image: 'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1600&auto=format&fit=crop' },
 ];
 

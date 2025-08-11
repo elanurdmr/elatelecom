@@ -2,7 +2,6 @@ import React from 'react';
 import './Home.css';
 import FeaturedSlider from '../components/FeaturedSlider';
 import FeaturedProducts from '../components/FeaturedProducts';
-import AuthModal from '../components/AuthModal';
 
 function Home() {
   return (
@@ -37,10 +36,8 @@ function Home() {
           </div>
         </div>
       </div>
-      <AuthModal />
     </div>
   );
 }
 
 export default Home;
-
