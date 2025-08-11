@@ -41,25 +41,26 @@
 }
 
 .product-price {
-  color: #3498db;
+  color: #7c3aed;
   font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 1.5rem;
 }
 
 .product-button {
-  background-color: #3498db;
+  background: linear-gradient(90deg, #5b5bd6, #7c3aed);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 5px;
+  border-radius: 8px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: filter 0.2s ease, transform 0.2s ease;
 }
 
 .product-button:hover {
-  background-color: #2980b9;
+  filter: brightness(1.1);
+  transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
@@ -72,3 +73,4 @@
     padding: 1.5rem;
   }
 }
+

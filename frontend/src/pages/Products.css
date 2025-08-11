@@ -4,7 +4,7 @@
 }
 
 .products-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b2c7f 0%, #4b2e83 100%);
   color: white;
   padding: 3rem 2rem;
   text-align: center;
@@ -18,7 +18,7 @@
 
 .products-header p {
   font-size: 1.2rem;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .products-container {
@@ -40,3 +40,4 @@
     padding: 1rem;
   }
 }
+

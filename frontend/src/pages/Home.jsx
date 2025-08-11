@@ -1,9 +1,16 @@
 import React from 'react';
 import './Home.css';
+import FeaturedSlider from '../components/FeaturedSlider';
+import FeaturedProducts from '../components/FeaturedProducts';
+import AuthModal from '../components/AuthModal';
 
 function Home() {
   return (
     <div className="home">
+      <div className="home-top">
+        <FeaturedSlider />
+        <FeaturedProducts />
+      </div>
       <div className="hero-section">
         <h1>Ela Telekom'a Hoş Geldiniz</h1>
         <p>Telekomünikasyon çözümlerinde güvenilir ortağınız</p>
@@ -30,8 +37,10 @@ function Home() {
           </div>
         </div>
       </div>
+      <AuthModal />
     </div>
   );
 }
 
 export default Home;
+

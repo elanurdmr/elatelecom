@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import './ProductList.css';
+import { useNavigate } from 'react-router-dom';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);  
   const [error, setError] = useState(null);     
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://localhost:8080/api/products')
@@ -37,10 +39,10 @@ const ProductList = () => {
       ) : (
         <div className="products-grid">
           {products.map(product => (
-            <div key={product.id} className="product-card">
+            <div key={product.id} className="product-card" onClick={() => navigate(`/product/${product.id}`)}>
               <h3>{product.name}</h3>
               <p className="product-price">{product.price} TL</p>
-              <button className="product-button">Detaylar</button>
+              <button className="product-button" onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }}>Detaylar</button>
             </div>
           ))}
         </div>
@@ -50,3 +52,4 @@ const ProductList = () => {
 };
 
 export default ProductList;
+
