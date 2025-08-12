@@ -1,24 +1,20 @@
 package com.elanur.elatelekom.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.*;
-
-@Document
-@Table(name = "slider_items")
+@Document(collection = "slider_items")
 public class SliderItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    private String imageUrl; 
+    private String imageUrl;
 
-    private String title;   
+    private String title;
 
-    private String description; 
+    private String description;
 
-    // Getter & Setter
     public String getId() {
         return id;
     }

@@ -3,6 +3,8 @@ package com.elanur.elatelekom.controller;
 import com.elanur.elatelekom.model.User;
 import com.elanur.elatelekom.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,20 +16,23 @@ public class AuthController {
 
     // Kullanıcı kayıt endpointi
     @PostMapping("/register")
-    public User register(@RequestParam String username,
-                         @RequestParam String password) {
-        return authService.register(username, password);
+    public ResponseEntity<?> register(@RequestBody User req) {
+        try {
+            User created = authService.register(req.getUsername(), req.getPassword());
+            created.setPassword(null);
+            return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+        }
     }
 
     // Kullanıcı giriş endpointi
     @PostMapping("/login")
-    public String login(@RequestParam String username,
-                        @RequestParam String password) {
-        boolean success = authService.login(username, password);
+    public ResponseEntity<?> login(@RequestBody User req) {
+        boolean success = authService.login(req.getUsername(), req.getPassword());
         if (success) {
-            return "Giriş başarılı! Hoşgeldin " + username;
-        } else {
-            return "Kullanıcı adı veya şifre hatalı!";
+            return ResponseEntity.ok().body("Login successful");
         }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
     }
 }

@@ -1,30 +1,23 @@
 package com.elanur.elatelekom.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.*;
-
-@Document
-@Table(name = "cart_items")
+@Document(collection = "cart_items")
 public class CartItem {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    // Her CartItem bir User'a ait olacak 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @DBRef
     private User user;
 
-    // Her CartItem bir Product içerir
-    @ManyToOne
-    @JoinColumn(name = "product_id")
+    @DBRef
     private Product product;
 
-    private int quantity; // Sepetteki ürün miktarı
+    private int quantity;
 
-    // Getter & Setter
     public String getId() {
         return id;
     }

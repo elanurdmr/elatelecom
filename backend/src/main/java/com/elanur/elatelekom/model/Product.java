@@ -1,26 +1,20 @@
 package com.elanur.elatelekom.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.persistence.*;
-
-@Document
-@Table(name = "products")
+@Document(collection = "products")
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
-    @Column(nullable = false)
     private String name;
 
     private String description;
 
-    @Column(nullable = false)
     private double price;
 
-    // Getter & Setter'lar
     public String getId() {
         return id;
     }

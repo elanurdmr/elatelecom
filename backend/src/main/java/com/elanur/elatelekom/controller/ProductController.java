@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -24,7 +23,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Product> getProduct(@PathVariable String id) {  // String yaptık
+    public Optional<Product> getProduct(@PathVariable String id) {
         return service.getProductById(id);
     }
 
