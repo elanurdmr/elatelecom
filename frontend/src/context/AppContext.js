@@ -27,8 +27,8 @@ export function AppProvider({ children }) {
     addToCart,
     favoriteIds,
     toggleFavorite,
-    isAuthModalOpen,
-    setIsAuthModalOpen,
+    isAuthModalOpen,       // modal açık/kapalı durumu
+    setIsAuthModalOpen     // modal'ı açıp kapatma fonksiyonu
   }), [isLoggedIn, cartItems, favoriteIds, isAuthModalOpen]);
 
   return (

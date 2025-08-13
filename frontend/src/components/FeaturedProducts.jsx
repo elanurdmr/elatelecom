@@ -17,14 +17,28 @@ function FeaturedProducts() {
 
   useEffect(() => {
     fetch('http://localhost:8080/api/products')
-      .then(res => { if (!res.ok) throw new Error('Sunucu hatası'); return res.json(); })
+      .then(res => { 
+        if (!res.ok) throw new Error('Sunucu hatası'); 
+        return res.json(); 
+      })
       .then(data => { setProducts(data); setLoading(false); })
       .catch(err => { setError(err.message); setLoading(false); });
   }, []);
 
   const handleAddToCart = (product) => {
-    if (!isLoggedIn) { setIsAuthModalOpen(true); return; }
+    if (!isLoggedIn) { 
+      setIsAuthModalOpen(true); 
+      return; 
+    }
     addToCart(product);
+  };
+
+  const handleToggleFavorite = (productId) => {
+    if (!isLoggedIn) { 
+      setIsAuthModalOpen(true); 
+      return; 
+    }
+    toggleFavorite(productId);
   };
 
   const getCategoryToken = (p) => ((p.category || p.type || '').toString().toLowerCase());
@@ -44,7 +58,9 @@ function FeaturedProducts() {
     return !isSim(p) && !isPaket(p);
   };
 
-  const filtered = products.filter(p => tab === 'cihaz' ? isCihaz(p) : tab === 'sim' ? isSim(p) : isPaket(p));
+  const filtered = products.filter(p => 
+    tab === 'cihaz' ? isCihaz(p) : tab === 'sim' ? isSim(p) : isPaket(p)
+  );
 
   if (loading) return <div className="featured-loading">Ürünler yükleniyor...</div>;
   if (error) return <div className="featured-error">Hata: {error}</div>;
@@ -74,7 +90,7 @@ function FeaturedProducts() {
               <button
                 className="favorite-btn"
                 aria-label="favori"
-                onClick={() => toggleFavorite(p.id)}
+                onClick={() => handleToggleFavorite(p.id)}
               >
                 {favoriteIds.includes(p.id) ? <FaHeart /> : <FaRegHeart />}
               </button>
@@ -88,10 +104,12 @@ function FeaturedProducts() {
           product={selected}
           onClose={() => setSelected(null)}
           onAddToCart={() => handleAddToCart(selected)}
-          onToggleFavorite={() => toggleFavorite(selected.id)}
+          onToggleFavorite={() => handleToggleFavorite(selected.id)}
           isFavorite={favoriteIds.includes(selected.id)}
         />
       )}
+
+      {/* Login/Registration Modal */}
       <AuthModal />
     </div>
   );

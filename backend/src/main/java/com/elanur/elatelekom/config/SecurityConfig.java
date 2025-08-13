@@ -18,13 +18,15 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .cors(Customizer.withDefaults())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/products/**", "/api/home/**", "/api/cart/**").permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers("/api/auth/**").permitAll() // register/login açık
+                .requestMatchers("/api/products/**").permitAll() // ürünleri herkes görebilir
+                .requestMatchers("/api/cart/**", "/api/favorites/**", "/api/profile/**").authenticated() // login gerekir
+                .anyRequest().permitAll()
             )
-            .httpBasic(Customizer.withDefaults());
+            .httpBasic(Customizer.withDefaults())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         return http.build();
     }
 
@@ -33,5 +35,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-
-

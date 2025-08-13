@@ -1,38 +1,55 @@
 package com.elanur.elatelekom.controller;
 
 import com.elanur.elatelekom.model.User;
-import com.elanur.elatelekom.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.elanur.elatelekom.repository.UserRepository;
+import com.elanur.elatelekom.service.MailService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final UserRepository userRepo;
+    private final MailService mailService;
 
-    // Kullanıcı kayıt endpointi
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User req) {
-        try {
-            User created = authService.register(req.getUsername(), req.getPassword());
-            created.setPassword(null);
-            return ResponseEntity.status(HttpStatus.CREATED).body(created);
-        } catch (RuntimeException ex) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
-        }
+    public AuthController(UserRepository userRepo, MailService mailService) {
+        this.userRepo = userRepo;
+        this.mailService = mailService;
     }
 
-    // Kullanıcı giriş endpointi
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User req) {
-        boolean success = authService.login(req.getUsername(), req.getPassword());
-        if (success) {
-            return ResponseEntity.ok().body("Login successful");
+    @PostMapping("/register")
+    public String register(@RequestParam String username, @RequestParam String password, @RequestParam String email) {
+        if(userRepo.findByUsername(username).isPresent()) {
+            return "Kullanıcı zaten var!";
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        User user = new User(username, password, email);
+        userRepo.save(user);
+
+
+        // Mail gönder
+        String subject = "ElaTelekom Kayıt Başarılı";
+        String text = "Merhaba " + username + ",\n\nKaydınız başarıyla oluşturuldu!";
+        mailService.sendMail(email, subject, text);
+
+        return "Kayıt başarılı! Mail gönderildi.";
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam String username, @RequestParam String password, HttpSession session) {
+        Optional<User> userOpt = userRepo.findByUsername(username);
+        if(userOpt.isPresent() && userOpt.get().getPassword().equals(password)) {
+            session.setAttribute("user", username);
+            return "Giriş başarılı!";
+        }
+        return "Kullanıcı adı veya şifre hatalı!";
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "Çıkış yapıldı!";
     }
 }
