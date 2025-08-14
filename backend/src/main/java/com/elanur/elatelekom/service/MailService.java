@@ -20,4 +20,18 @@ public class MailService {
         msg.setText(text);
         mailSender.send(msg);
     }
+
+    public void sendVerificationEmail(String email, String token) {
+        String subject = "Email Verification - ElaTelekom";
+        String text = String.format(
+            "Thank you for registering with ElaTelekom!\n\n" +
+            "Please click the following link to verify your email address:\n" +
+            "http://localhost:3000/verify-email?token=%s\n\n" +
+            "This link will expire in 24 hours.\n\n" +
+            "If you didn't create an account, please ignore this email.\n\n" +
+            "Best regards,\nElaTelekom Team",
+            token
+        );
+        sendMail(email, subject, text);
+    }
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaStar, FaShoppingCart, FaUser } from 'react-icons/fa';
 import { useAppContext } from '../context/AppContext';
 import './Navbar.css';
@@ -7,10 +7,21 @@ import './Navbar.css';
 function Navbar() {
   const { isLoggedIn, setIsLoggedIn } = useAppContext();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     setIsProfileDropdownOpen(false);
+  };
+
+  const handleLoginClick = () => {
+    setIsProfileDropdownOpen(false);
+    navigate('/login');
+  };
+
+  const handleRegisterClick = () => {
+    setIsProfileDropdownOpen(false);
+    navigate('/register');
   };
 
   return (
@@ -46,8 +57,8 @@ function Navbar() {
                 </>
               ) : (
                 <>
-                  <button className="dropdown-item" onClick={() => { /* Open login modal */ setIsProfileDropdownOpen(false); }}>Giriş Yap</button>
-                  <button className="dropdown-item" onClick={() => { /* Open register modal */ setIsProfileDropdownOpen(false); }}>Kayıt Ol</button>
+                  <button className="dropdown-item" onClick={handleLoginClick}>Giriş Yap</button>
+                  <button className="dropdown-item" onClick={handleRegisterClick}>Kayıt Ol</button>
                 </>
               )}
             </div>

@@ -2,14 +2,13 @@ package com.elanur.elatelekom.service;
 
 import com.elanur.elatelekom.model.CartItem;
 import com.elanur.elatelekom.model.Product;
-import com.elanur.elatelekom.model.User;
 import com.elanur.elatelekom.repository.CartRepository;
 import com.elanur.elatelekom.repository.ProductRepository;
-import com.elanur.elatelekom.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartService {
@@ -20,66 +19,60 @@ public class CartService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    // Sepet ürün+
     public CartItem addToCart(String userId, String productId, int quantity) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
-
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Ürün bulunamadı"));
+                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        CartItem existingItem = cartRepository.findByUserAndProduct(user, product);
+        Optional<CartItem> existingItem = cartRepository.findByUserIdAndProductId(userId, productId);
 
-        if (existingItem != null) {
-            existingItem.setQuantity(existingItem.getQuantity() + quantity); // Miktar arttır
-            return cartRepository.save(existingItem);
+        if (existingItem.isPresent()) {
+            CartItem item = existingItem.get();
+            item.setQuantity(item.getQuantity() + quantity);
+            return cartRepository.save(item);
         } else {
-            CartItem newItem = new CartItem();
-            newItem.setUser(user);
-            newItem.setProduct(product);
-            newItem.setQuantity(quantity);
+            CartItem newItem = new CartItem(
+                userId, 
+                productId, 
+                product.getName(), 
+                product.getImage(), 
+                product.getPrice(), 
+                quantity
+            );
             return cartRepository.save(newItem);
         }
     }
 
-    // user ssepetini getir
-    public List<CartItem> getCartByUser(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
-        return cartRepository.findByUser(user);
+    public List<CartItem> getUserCart(String userId) {
+        return cartRepository.findByUserId(userId);
     }
 
-    // Sepetten ürün çıkar
     public void removeFromCart(String userId, String productId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
-
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Ürün bulunamadı"));
-
-        CartItem existingItem = cartRepository.findByUserAndProduct(user, product);
-        if (existingItem != null) {
-            cartRepository.delete(existingItem);
-        }
+        cartRepository.deleteByUserIdAndProductId(userId, productId);
     }
 
-    // ürün miktarını güncelle
     public CartItem updateQuantity(String userId, String productId, int quantity) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+        CartItem existingItem = cartRepository.findByUserIdAndProductId(userId, productId)
+                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+        
+        existingItem.setQuantity(quantity);
+        return cartRepository.save(existingItem);
+    }
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Ürün bulunamadı"));
+    public void clearCart(String userId) {
+        cartRepository.deleteByUserId(userId);
+    }
 
-        CartItem existingItem = cartRepository.findByUserAndProduct(user, product);
-        if (existingItem != null) {
-            existingItem.setQuantity(quantity);
-            return cartRepository.save(existingItem);
-        } else {
-            throw new RuntimeException("Sepette böyle bir ürün yok");
-        }
+    public double getCartTotal(String userId) {
+        List<CartItem> cartItems = getUserCart(userId);
+        return cartItems.stream()
+                .mapToDouble(CartItem::getTotal)
+                .sum();
+    }
+
+    public int getCartItemCount(String userId) {
+        List<CartItem> cartItems = getUserCart(userId);
+        return cartItems.stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
     }
 }

@@ -28,7 +28,17 @@ public class ProductService {
         return repository.save(product);
     }
 
-    // Burada da id String olmalı
+    public Product createProduct(Product product) {
+        return repository.save(product);
+    }
+
+    public Product updateProduct(Product product) {
+        if (product.getId() == null) {
+            throw new RuntimeException("Product ID cannot be null for update");
+        }
+        return repository.save(product);
+    }
+
     public void deleteProduct(String id) {
         repository.deleteById(id);
     }

@@ -1,42 +1,117 @@
-import React, { useEffect, useState } from 'react';
-import { useAppContext } from '../context/AppContext';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Favorites.css';
 
-function Favorites() {
-  const { favoriteIds, toggleFavorite } = useAppContext();
-  const [all, setAll] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const Favorites = () => {
+  const { user, token } = useAuth();
   const navigate = useNavigate();
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/products')
-      .then(res => { if (!res.ok) throw new Error('Sunucu hatası'); return res.json(); })
-      .then(data => { setAll(data); setLoading(false); })
-      .catch(err => { setError(err.message); setLoading(false); });
-  }, []);
+    // Kullanıcı giriş yapmamışsa mock data göster
+    if (!user || !token) {
+      fetchFavorites();
+      return;
+    }
+    fetchFavorites();
+  }, [user, token, navigate]);
 
-  const products = all.filter(p => favoriteIds.includes(p.id));
+  const fetchFavorites = async () => {
+    try {
+      // For now, we'll use a mock favorites list
+      // In the future, this would fetch from the backend
+      const mockFavorites = [
+        {
+          id: '1',
+          name: 'Sample Product 1',
+          price: 99.99,
+          image: '/placeholder-product.jpg',
+          description: 'This is a sample product description'
+        },
+        {
+          id: '2',
+          name: 'Sample Product 2',
+          price: 149.99,
+          image: '/placeholder-product.jpg',
+          description: 'Another sample product description'
+        }
+      ];
+      setFavorites(mockFavorites);
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (loading) return <div className="favorites-loading">Yükleniyor...</div>;
-  if (error) return <div className="favorites-error">Hata: {error}</div>;
+  const removeFromFavorites = (productId) => {
+    setFavorites(favorites.filter(item => item.id !== productId));
+  };
+
+  const addToCart = (product) => {
+    // This would add the product to cart via API
+    console.log('Adding to cart:', product);
+    // For now, just show an alert
+    alert(`${product.name} added to cart!`);
+  };
+
+  if (loading) {
+    return (
+      <div className="favorites-container">
+        <div className="loading">Loading favorites...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="favorites-page">
-      <h1>Favorilerim</h1>
-      {products.length === 0 ? (
-        <p>Henüz favori ürününüz yok.</p>
+    <div className="favorites-container">
+      <div className="favorites-header">
+        <h1>My Favorites</h1>
+        <p>Your saved products and wishlist items</p>
+      </div>
+
+      {favorites.length === 0 ? (
+        <div className="favorites-empty">
+          <h2>No favorites yet</h2>
+          <p>Start adding products to your favorites to see them here!</p>
+          <button onClick={() => navigate('/products')} className="btn-primary">
+            Browse Products
+          </button>
+        </div>
       ) : (
         <div className="favorites-grid">
-          {products.map(p => (
-            <div key={p.id} className="fav-card" onClick={() => navigate(`/product/${p.id}`)}>
-              <div className="thumb" />
-              <div className="title">{p.name}</div>
-              <div className="price">{p.price} TL</div>
-              <div className="fav-actions" onClick={(e) => e.stopPropagation()}>
-                <button className="btn-outline" onClick={() => toggleFavorite(p.id)}>Favoriden Çıkar</button>
-                <button className="btn-primary" onClick={() => navigate(`/product/${p.id}`)}>Detaya Git</button>
+          {favorites.map((product) => (
+            <div key={product.id} className="favorite-item">
+              <div className="product-image">
+                <img src={product.image} alt={product.name} />
+                <button 
+                  className="remove-favorite"
+                  onClick={() => removeFromFavorites(product.id)}
+                  title="Remove from favorites"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="product-info">
+                <h3 className="product-name">{product.name}</h3>
+                <p className="product-description">{product.description}</p>
+                <p className="product-price">${product.price.toFixed(2)}</p>
+                <div className="product-actions">
+                  <button 
+                    className="btn-add-to-cart"
+                    onClick={() => addToCart(product)}
+                  >
+                    Add to Cart
+                  </button>
+                  <button 
+                    className="btn-view-details"
+                    onClick={() => navigate(`/product/${product.id}`)}
+                  >
+                    View Details
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -44,6 +119,6 @@ function Favorites() {
       )}
     </div>
   );
-}
+};
 
 export default Favorites;

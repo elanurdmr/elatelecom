@@ -1,11 +1,192 @@
-.favorites-page { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-.favorites-page h1 { color: #2d3748; margin-bottom: 1rem; }
-.favorites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
-.fav-card { background: #fff; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.08); padding: 1rem; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-.fav-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,0.12); }
-.thumb { height: 140px; border-radius: 8px; background: linear-gradient(135deg, #e2e8f0, #cbd5e0); margin-bottom: 0.75rem; }
-.title { font-weight: 600; color: #2d3748; }
-.price { color: #4a5568; font-weight: 700; margin: 0.25rem 0 0.75rem; }
-.fav-actions { display: flex; gap: 0.5rem; }
-.btn-primary { background: linear-gradient(90deg, #e2e8f0, #cbd5e0); color: #2d3748; border: none; padding: 0.5rem 0.9rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
-.btn-outline { background: transparent; color: #4a5568; border: 1px solid #cbd5e0; padding: 0.5rem 0.9rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.favorites-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.favorites-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.favorites-header h1 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+}
+
+.favorites-header p {
+  color: #666;
+  font-size: 18px;
+}
+
+.favorites-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.favorites-empty h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.favorites-empty p {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 18px;
+}
+
+.btn-primary {
+  padding: 12px 24px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.favorite-item {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.favorite-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-favorite {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #dc3545;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.remove-favorite:hover {
+  background: #dc3545;
+  color: white;
+}
+
+.product-info {
+  padding: 20px;
+}
+
+.product-name {
+  color: #333;
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.product-description {
+  color: #666;
+  margin: 0 0 15px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.product-price {
+  color: #007bff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+}
+
+.product-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-add-to-cart,
+.btn-view-details {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-to-cart {
+  background: #007bff;
+  color: white;
+}
+
+.btn-add-to-cart:hover {
+  background: #0056b3;
+}
+
+.btn-view-details {
+  background: #f8f9fa;
+  color: #333;
+  border: 1px solid #dee2e6;
+}
+
+.btn-view-details:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .favorites-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .product-actions {
+    flex-direction: column;
+  }
+  
+  .favorites-header h1 {
+    font-size: 2rem;
+  }
+}

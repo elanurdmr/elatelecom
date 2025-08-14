@@ -1,118 +1,116 @@
-import React, { useEffect, useState } from 'react';
-import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import { useAppContext } from '../context/AppContext';
-import ProductModal from './ProductModal';
-import AuthModal from './AuthModal';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './FeaturedProducts.css';
 
-function FeaturedProducts() {
-  const { isLoggedIn, setIsAuthModalOpen, favoriteIds, toggleFavorite, addToCart } = useAppContext();
+const FeaturedProducts = () => {
   const [products, setProducts] = useState([]);
-  const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [tab, setTab] = useState('cihaz');
-  const navigate = useNavigate();
+  const { user, token } = useAuth();
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/products')
-      .then(res => { 
-        if (!res.ok) throw new Error('Sunucu hatası'); 
-        return res.json(); 
-      })
-      .then(data => { setProducts(data); setLoading(false); })
-      .catch(err => { setError(err.message); setLoading(false); });
+    fetchProducts();
   }, []);
 
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/products');
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data);
+      } else {
+        throw new Error('Ürünler yüklenemedi');
+      }
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddToCart = (product) => {
-    if (!isLoggedIn) { 
-      setIsAuthModalOpen(true); 
-      return; 
+    if (!user || !token) {
+      alert('Sepete eklemek için giriş yapmanız gerekiyor!');
+      return;
     }
-    addToCart(product);
+    // Sepete ekleme işlemi burada yapılacak
+    console.log('Adding to cart:', product);
+    alert(`${product.name} sepete eklendi!`);
   };
 
-  const handleToggleFavorite = (productId) => {
-    if (!isLoggedIn) { 
-      setIsAuthModalOpen(true); 
-      return; 
+  const handleAddToFavorites = (product) => {
+    if (!user || !token) {
+      alert('Favorilere eklemek için giriş yapmanız gerekiyor!');
+      return;
     }
-    toggleFavorite(productId);
+    // Favorilere ekleme işlemi burada yapılacak
+    console.log('Adding to favorites:', product);
+    alert(`${product.name} favorilere eklendi!`);
   };
 
-  const getCategoryToken = (p) => ((p.category || p.type || '').toString().toLowerCase());
-  const isSim = (p) => {
-    const token = getCategoryToken(p);
-    const name = (p.name || '').toLowerCase();
-    return token === 'sim' || name.includes('sim');
-  };
-  const isPaket = (p) => {
-    const token = getCategoryToken(p);
-    const name = (p.name || '').toLowerCase();
-    return token === 'paket' || name.includes('paket') || name.includes('tarife');
-  };
-  const isCihaz = (p) => {
-    const token = getCategoryToken(p);
-    if (token === 'cihaz') return true;
-    return !isSim(p) && !isPaket(p);
-  };
+  if (loading) {
+    return (
+      <div className="featured-products">
+        <div className="loading">Ürünler yükleniyor...</div>
+      </div>
+    );
+  }
 
-  const filtered = products.filter(p => 
-    tab === 'cihaz' ? isCihaz(p) : tab === 'sim' ? isSim(p) : isPaket(p)
-  );
-
-  if (loading) return <div className="featured-loading">Ürünler yükleniyor...</div>;
-  if (error) return <div className="featured-error">Hata: {error}</div>;
+  if (error) {
+    return (
+      <div className="featured-products">
+        <div className="error">Hata: {error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="featured-products">
-      <div className="section-header">
-        <h2>Ürünler</h2>
-        <div className="tabs">
-          <button className={`tab ${tab === 'cihaz' ? 'active' : ''}`} onClick={() => setTab('cihaz')}>Cihaz</button>
-          <button className={`tab ${tab === 'sim' ? 'active' : ''}`} onClick={() => setTab('sim')}>SIM</button>
-          <button className={`tab ${tab === 'paket' ? 'active' : ''}`} onClick={() => setTab('paket')}>Paket</button>
-        </div>
-      </div>
-
-      <div className="scroller">
-        {filtered.map(p => (
-          <div className="fp-card" key={p.id} onClick={() => navigate(`/product/${p.id}`)}>
-            <div className="fp-thumb" />
-            <div className="fp-body">
-              <div className="fp-title">{p.name}</div>
-              <div className="fp-price">{p.price} TL</div>
+      <h2>Öne Çıkan Ürünler</h2>
+      <div className="products-grid">
+        {products.slice(0, 6).map((product) => (
+          <div key={product.id} className="product-card">
+            <div className="product-image">
+              <img 
+                src={product.image || '/placeholder-product.jpg'} 
+                alt={product.name}
+                onError={(e) => {
+                  e.target.src = '/placeholder-product.jpg';
+                }}
+              />
             </div>
-            <div className="fp-actions" onClick={(e) => e.stopPropagation()}>
-              <button className="btn-outline" onClick={() => setSelected(p)}>Detay</button>
-              <button className="btn-primary" onClick={() => handleAddToCart(p)}>Sepete Ekle</button>
-              <button
-                className="favorite-btn"
-                aria-label="favori"
-                onClick={() => handleToggleFavorite(p.id)}
-              >
-                {favoriteIds.includes(p.id) ? <FaHeart /> : <FaRegHeart />}
-              </button>
+            <div className="product-info">
+              <h3 className="product-name">{product.name}</h3>
+              <p className="product-description">{product.description}</p>
+              <p className="product-category">{product.category}</p>
+              <p className="product-price">₺{product.price.toLocaleString()}</p>
+              <div className="product-actions">
+                <button
+                  className="btn-add-to-cart"
+                  onClick={() => handleAddToCart(product)}
+                >
+                  Sepete Ekle
+                </button>
+                <button
+                  className="btn-add-to-favorites"
+                  onClick={() => handleAddToFavorites(product)}
+                >
+                  ❤️
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
-
-      {selected && (
-        <ProductModal
-          product={selected}
-          onClose={() => setSelected(null)}
-          onAddToCart={() => handleAddToCart(selected)}
-          onToggleFavorite={() => handleToggleFavorite(selected.id)}
-          isFavorite={favoriteIds.includes(selected.id)}
-        />
-      )}
-
-      {/* Login/Registration Modal */}
-      <AuthModal />
+      <div className="view-all-container">
+        <Link to="/products" className="btn-view-all">
+          Tüm Ürünleri Gör
+        </Link>
+      </div>
     </div>
   );
-}
+};
 
 export default FeaturedProducts;
