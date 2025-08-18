@@ -2,173 +2,164 @@ package com.elanur.elatelekom.controller;
 
 import com.elanur.elatelekom.model.User;
 import com.elanur.elatelekom.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody RegisterRequest request) {
+    // Constructor injection (field @Autowired yerine)
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    // ---------- REGISTER ----------
+    @PostMapping(path = "/register", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        String email = safe(request.getEmail());
         try {
             User user = authService.register(
-                request.getUsername(), 
-                request.getPassword(), 
-                request.getEmail(),
-                request.getFirstName(),
-                request.getLastName()
+                    email,
+                    request.getPassword(),
+                    request.getFirstName(),
+                    request.getLastName()
             );
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Registration successful! Please check your email for verification.");
-            response.put("userId", user.getId());
-            
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Registration successful!",
+                    "userId", user.getId()
+            ));
+        } catch (AuthService.EmailAlreadyExistsException e) {
+            return ResponseEntity.status(409).body(Map.of("error", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            e.printStackTrace(); // konsola tam stack trace
+            return ResponseEntity.status(500).body(Map.of("error", "Internal error"));
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest request) {
+    // ---------- LOGIN ----------
+    @PostMapping(path = "/login", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+        String email = safe(request.getEmail());
         try {
-            String token = authService.login(request.getUsername(), request.getPassword());
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Login successful!");
-            response.put("token", token);
-            response.put("username", request.getUsername());
-            
-            return ResponseEntity.ok(response);
+            String token = authService.login(email, request.getPassword());
+            return ResponseEntity.ok(Map.of(
+                    "message", "Login successful!",
+                    "token", token,
+                    "email", email
+            ));
+        } catch (AuthService.UnauthorizedException e) {
+            return ResponseEntity.status(401).body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Internal error"));
         }
     }
 
-    @PostMapping("/verify-email")
-    public ResponseEntity<Map<String, Object>> verifyEmail(@RequestBody VerifyEmailRequest request) {
-        try {
-            boolean verified = authService.verifyEmail(request.getToken());
-            
-            Map<String, Object> response = new HashMap<>();
-            if (verified) {
-                response.put("message", "Email verified successfully!");
-            } else {
-                response.put("error", "Invalid or expired verification token");
-                return ResponseEntity.badRequest().body(response);
-            }
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
-    }
-
+    // ---------- PROFILE (GET) ----------
     @GetMapping("/profile")
-    public ResponseEntity<User> getProfile() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = authService.getUserByUsername(username);
+    public ResponseEntity<?> getProfile() {
+        String email = currentUserEmail();
+        User user = authService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/profile")
-    public ResponseEntity<User> updateProfile(@RequestBody UpdateProfileRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        User user = authService.getUserByUsername(username);
-        
-        User updatedUser = authService.updateUserProfile(
-            user.getId(),
-            request.getFirstName(),
-            request.getLastName(),
-            request.getPhone(),
-            request.getAddress(),
-            request.getCity(),
-            request.getPostalCode(),
-            request.getCountry()
+    // ---------- PROFILE (PUT) ----------
+    @PutMapping(path = "/profile", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> updateProfile(@RequestBody UpdateProfileRequest request) {
+        String email = currentUserEmail();
+        User user = authService.getUserByEmail(email);
+
+        User updated = authService.updateUserProfile(
+                user.getId(),
+                request.getFirstName(),
+                request.getLastName(),
+                request.getPhone(),
+                request.getAddress(),
+                request.getCity(),
+                request.getPostalCode(),
+                request.getCountry()
         );
-        
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(updated);
     }
 
-    @PostMapping("/change-password")
-    public ResponseEntity<Map<String, Object>> changePassword(@RequestBody ChangePasswordRequest request) {
+    // ---------- CHANGE PASSWORD ----------
+    @PostMapping(path = "/change-password", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String username = authentication.getName();
-            User user = authService.getUserByUsername(username);
-            
+            String email = currentUserEmail();
+            User user = authService.getUserByEmail(email);
+
             authService.changePassword(user.getId(), request.getOldPassword(), request.getNewPassword());
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Password changed successfully!");
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully!"));
         } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("error", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    // Request DTOs
+    // ---------- Helpers ----------
+    private static String safe(String s) {
+        return s == null ? null : s.trim().toLowerCase();
+    }
+
+    private static String currentUserEmail() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        // JWT filter username olarak email’i set ediyorsa:
+        return auth.getName();
+    }
+
+    // ---------- Request DTOs ----------
     public static class RegisterRequest {
-        private String username;
-        private String password;
-        private String email;
-        private String firstName;
-        private String lastName;
-
-        // Getters and Setters
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
+        @Email @NotBlank private String email;
+        @NotBlank private String password;
+        @NotBlank private String firstName;
+        @NotBlank private String lastName;
+        private String phone;
+        private String address;
+        private String city;
+        private String postalCode;
+        private String country;
 
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
-
+        public String getPassword() { return password; }
+        public void setPassword(String password) { this.password = password; }
         public String getFirstName() { return firstName; }
         public void setFirstName(String firstName) { this.firstName = firstName; }
-
         public String getLastName() { return lastName; }
         public void setLastName(String lastName) { this.lastName = lastName; }
+        public String getPhone() { return phone; }
+        public void setPhone(String phone) { this.phone = phone; }
+        public String getAddress() { return address; }
+        public void setAddress(String address) { this.address = address; }
+        public String getCity() { return city; }
+        public void setCity(String city) { this.city = city; }
+        public String getPostalCode() { return postalCode; }
+        public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
+        public String getCountry() { return country; }
+        public void setCountry(String country) { this.country = country; }
     }
 
     public static class LoginRequest {
-        private String username;
-        private String password;
+        @NotBlank @Email private String email;
+        @NotBlank private String password;
 
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
         public String getPassword() { return password; }
         public void setPassword(String password) { this.password = password; }
-    }
-
-    public static class VerifyEmailRequest {
-        private String token;
-
-        public String getToken() { return token; }
-        public void setToken(String token) { this.token = token; }
     }
 
     public static class UpdateProfileRequest {
@@ -180,25 +171,18 @@ public class AuthController {
         private String postalCode;
         private String country;
 
-        // Getters and Setters
         public String getFirstName() { return firstName; }
         public void setFirstName(String firstName) { this.firstName = firstName; }
-
         public String getLastName() { return lastName; }
         public void setLastName(String lastName) { this.lastName = lastName; }
-
         public String getPhone() { return phone; }
         public void setPhone(String phone) { this.phone = phone; }
-
         public String getAddress() { return address; }
         public void setAddress(String address) { this.address = address; }
-
         public String getCity() { return city; }
         public void setCity(String city) { this.city = city; }
-
         public String getPostalCode() { return postalCode; }
         public void setPostalCode(String postalCode) { this.postalCode = postalCode; }
-
         public String getCountry() { return country; }
         public void setCountry(String country) { this.country = country; }
     }
@@ -209,7 +193,6 @@ public class AuthController {
 
         public String getOldPassword() { return oldPassword; }
         public void setOldPassword(String oldPassword) { this.oldPassword = oldPassword; }
-
         public String getNewPassword() { return newPassword; }
         public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
     }

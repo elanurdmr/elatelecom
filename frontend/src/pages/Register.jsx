@@ -20,7 +20,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const {  } = useAuth(); // 'login' kaldırıldı
 
   const handleChange = (e) => {
     setFormData({
@@ -57,7 +57,7 @@ const Register = () => {
         }, 3000);
       } else {
         const errorData = await response.json();
-        setError(errorData.message || 'Kayıt başarısız');
+        setError(errorData.error || 'Kayıt başarısız');
       }
     } catch (err) {
       setError('Sunucu hatası. Lütfen tekrar deneyin.');

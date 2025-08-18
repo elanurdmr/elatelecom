@@ -5,7 +5,6 @@ import com.elanur.elatelekom.model.Order;
 import com.elanur.elatelekom.model.OrderItem;
 import com.elanur.elatelekom.repository.CartRepository;
 import com.elanur.elatelekom.repository.OrderRepository;
-import com.elanur.elatelekom.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +21,6 @@ public class OrderService {
 
     @Autowired
     private CartRepository cartRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
 
     public Order createOrder(String userId, String shippingAddress, String shippingCity, 
                            String shippingPostalCode, String shippingCountry, String shippingPhone, String notes) {

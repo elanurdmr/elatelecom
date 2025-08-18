@@ -4,7 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Document(collection = "users")
 public class User {
@@ -15,7 +14,7 @@ public class User {
     @Indexed(unique = true)
     private String username;
 
-    private String password;
+    private String passwordHash; 
 
     @Indexed(unique = true)
     private String email;
@@ -29,34 +28,29 @@ public class User {
     private String country;
     
     private UserRole role = UserRole.USER;
-    private boolean emailVerified = false;
-    private String emailVerificationToken;
-    private LocalDateTime emailVerificationExpiry;
+    private boolean active = true;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private boolean active = true;
 
     public enum UserRole {
         USER, ADMIN
     }
 
-    // Boş constructor
     public User() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Parametreli constructor
-    public User(String username, String password, String email, String firstName, String lastName) {
+    public User(String username, String passwordHash, String email, String firstName, String lastName) {
         this();
         this.username = username;
-        this.password = password;
+        this.passwordHash = passwordHash;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    // Getter / Setter
     public String getId() {
         return id;
     }
@@ -73,12 +67,12 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getEmail() { 
@@ -153,28 +147,12 @@ public class User {
         this.role = role;
     }
 
-    public boolean isEmailVerified() {
-        return emailVerified;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public String getEmailVerificationToken() {
-        return emailVerificationToken;
-    }
-
-    public void setEmailVerificationToken(String emailVerificationToken) {
-        this.emailVerificationToken = emailVerificationToken;
-    }
-
-    public LocalDateTime getEmailVerificationExpiry() {
-        return emailVerificationExpiry;
-    }
-
-    public void setEmailVerificationExpiry(LocalDateTime emailVerificationExpiry) {
-        this.emailVerificationExpiry = emailVerificationExpiry;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -191,14 +169,6 @@ public class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public void updateTimestamp() {
