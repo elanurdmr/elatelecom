@@ -7,6 +7,9 @@ import Cart from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 import Footer from "./components/Footer";
 import { AppProvider } from "./context/AppContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -25,6 +28,9 @@ function App() {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
           <Footer />
         </Router>

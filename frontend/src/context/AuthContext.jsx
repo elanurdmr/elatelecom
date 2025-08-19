@@ -1,4 +1,5 @@
 import { createContext, useState, useContext } from "react";
+import api from "../utils/services/api";
 
 const AuthContext = createContext();
 
@@ -6,16 +7,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || "");
 
-  const login = async (username, password) => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await res.json();
-    setToken(data.token);
-    localStorage.setItem("token", data.token);
-    setUser(data.user);
+  const login = async (email, password) => {
+    const res = await api("/auth/login", "POST", { email, password });
+    setToken(res.token);
+    localStorage.setItem("token", res.token);
+    setUser(res.user);
   };
 
   const logout = () => {

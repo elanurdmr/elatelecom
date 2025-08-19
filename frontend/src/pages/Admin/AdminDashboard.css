@@ -1,0 +1,47 @@
+.admin-dashboard {
+  display: flex;
+  min-height: calc(100vh - 80px); /* Adjust based on Navbar and Footer height */
+}
+
+.admin-sidebar {
+  width: 200px;
+  background-color: #f0f2f5;
+  padding: 20px;
+  border-right: 1px solid #e0e0e0;
+}
+
+.admin-sidebar h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.admin-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.admin-sidebar li {
+  margin-bottom: 10px;
+}
+
+.admin-sidebar a {
+  text-decoration: none;
+  color: #555;
+  font-weight: bold;
+}
+
+.admin-sidebar a:hover {
+  color: #007bff;
+}
+
+.admin-content {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.admin-content h1 {
+  color: #333;
+  margin-top: 0;
+}

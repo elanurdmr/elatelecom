@@ -26,24 +26,14 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        login(data.token, data.user);
-        navigate('/');
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Giriş başarısız');
-      }
+      await login(formData.email, formData.password);
+      navigate('/');
     } catch (err) {
-      setError('Sunucu hatası. Lütfen tekrar deneyin.');
+      if (err.message && err.message.includes('User not found')) {
+        setError('Kullanıcı bulunamadı.');
+      } else {
+        setError(err.message || 'Giriş başarısız');
+      }
     } finally {
       setLoading(false);
     }
