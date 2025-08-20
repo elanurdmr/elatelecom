@@ -11,7 +11,18 @@ export function AuthProvider({ children }) {
     const res = await api("/auth/login", "POST", { email, password });
     setToken(res.token);
     localStorage.setItem("token", res.token);
-    setUser(res.user);
+    // Sadece gerekli kullanıcı bilgilerini ayarla
+    if (res.user) {
+      setUser({
+        id: res.user.id,
+        email: res.user.email,
+        firstName: res.user.firstName,
+        lastName: res.user.lastName,
+        role: res.user.role
+      });
+    } else {
+      setUser(null); // Kullanıcı nesnesi yoksa null yap
+    }
   };
 
   const logout = () => {

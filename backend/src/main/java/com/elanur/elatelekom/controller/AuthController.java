@@ -54,10 +54,12 @@ public class AuthController {
         String email = safe(request.getEmail());
         try {
             String token = authService.login(email, request.getPassword());
+            User user = authService.getUserByEmail(email); // Kullanıcıyı burada al
             return ResponseEntity.ok(Map.of(
                     "message", "Login successful!",
                     "token", token,
-                    "email", email
+                    "email", email,
+                    "user", user // Kullanıcı nesnesini ekle
             ));
         } catch (AuthService.UnauthorizedException e) {
             return ResponseEntity.status(401).body(Map.of("error", e.getMessage()));

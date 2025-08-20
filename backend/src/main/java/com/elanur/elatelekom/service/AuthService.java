@@ -38,6 +38,7 @@ public class AuthService {
 
         User user = new User();
         user.setEmail(email);
+        user.setUsername(email); // Kullanıcı adını email olarak ayarla
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setPasswordHash(passwordEncoder.encode(rawPassword));
