@@ -1,0 +1,181 @@
+.order-tracking-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.order-tracking-container h2 {
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 2.2rem;
+}
+
+.order-tracking-form {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.order-tracking-form input {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  flex-grow: 1;
+  max-width: 300px;
+}
+
+.order-tracking-form button {
+  padding: 12px 25px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.order-tracking-form button:hover {
+  background: #0056b3;
+}
+
+.loading, .error-message {
+  padding: 20px;
+  font-size: 1.1rem;
+  color: #555;
+  margin-top: 20px;
+}
+
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+}
+
+.tracking-details {
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.tracking-details h3 {
+  color: #333;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+.current-status {
+  font-weight: 700;
+  color: #007bff;
+}
+
+.tracking-timeline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 40px 0;
+  position: relative;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+
+.timeline-step .icon {
+  font-size: 2.5rem;
+  color: #ccc;
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+
+.timeline-step span {
+  font-size: 0.9rem;
+  color: #777;
+  font-weight: 500;
+}
+
+.timeline-step.active .icon {
+  color: #28a745; /* Active step color */
+}
+
+.timeline-line {
+  position: absolute;
+  top: 30px; /* Adjust to align with icons */
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #eee;
+  z-index: 0;
+}
+
+.timeline-step.active + .timeline-line {
+  background: linear-gradient(to right, #28a745, #28a745);
+}
+
+.timeline-line:last-child { display: none; } /* Hide last line */
+
+.delivery-truck-animation {
+  margin: 50px 0;
+  position: relative;
+  height: 50px;
+  overflow: hidden;
+}
+
+.delivery-truck {
+  font-size: 3rem;
+  color: #007bff;
+  position: absolute;
+  left: -10%; /* Start off-screen */
+  animation: truck-move 10s linear infinite; /* Adjust duration as needed */
+}
+
+@keyframes truck-move {
+  0% {
+    left: -10%;
+  }
+  100% {
+    left: 110%; /* End off-screen */
+  }
+}
+
+@media (max-width: 768px) {
+  .order-tracking-form {
+    flex-direction: column;
+    padding: 0 15px;
+  }
+
+  .order-tracking-form input, .order-tracking-form button {
+    max-width: 100%;
+  }
+
+  .tracking-timeline {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .timeline-step {
+    flex: none;
+    width: 45%; /* Two steps per row */
+  }
+
+  .timeline-line {
+    display: none; /* Hide lines on small screens for simplicity */
+  }
+}

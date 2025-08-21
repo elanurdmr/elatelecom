@@ -80,6 +80,15 @@ const Login = () => {
             />
           </div>
 
+          <div className="form-options">
+            <label className="remember-me">
+              <input type="checkbox" name="rememberMe" /> Beni Hatırla
+            </label>
+            <button type="button" className="link-button" onClick={() => navigate('/forgot-password')}>
+              Şifremi unuttum?
+            </button>
+          </div>
+
           <button
             type="submit"
             className="login-button"

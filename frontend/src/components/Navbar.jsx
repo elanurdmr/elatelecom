@@ -1,26 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaStar, FaShoppingCart, FaUser } from 'react-icons/fa';
-import { useAppContext } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 function Navbar() {
-  const { isLoggedIn, setIsLoggedIn } = useAppContext();
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate(); // useNavigate hook'unu çağırarak navigate değişkenini tanımla
+
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false); // Add this line back
+
+  // Simulate login/logout based on user context
+  useEffect(() => {
+    // This effect is likely not needed anymore as user state is global via AuthContext
+    // However, if there are local state needs based on `user` context, they would go here.
+  }, [user]);
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setIsProfileDropdownOpen(false);
+    logout(); // Use logout from AuthContext
+    setIsProfileDropdownOpen(false); // Add this line back
   };
 
   const handleLoginClick = () => {
-    setIsProfileDropdownOpen(false);
+    setIsProfileDropdownOpen(false); // Add this line back
     navigate('/login');
   };
 
   const handleRegisterClick = () => {
-    setIsProfileDropdownOpen(false);
+    setIsProfileDropdownOpen(false); // Add this line back
     navigate('/register');
   };
 
@@ -46,7 +53,7 @@ function Navbar() {
           <FaUser className="navbar-icon" />
           {isProfileDropdownOpen && (
             <div className="profile-dropdown">
-              {isLoggedIn ? (
+              {user ? (
                 <>
                   <Link to="/profile" className="dropdown-item" onClick={() => setIsProfileDropdownOpen(false)}>Profilim</Link>
                   <Link to="/orders" className="dropdown-item" onClick={() => setIsProfileDropdownOpen(false)}>Siparişlerim</Link>

@@ -75,6 +75,25 @@
   border-color: #667eea;
 }
 
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  color: #666;
+}
+
+.remember-me input[type="checkbox"] {
+  margin-right: 8px;
+  width: auto;
+}
+
 .login-button {
   width: 100%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

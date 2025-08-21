@@ -4,9 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import './Checkout.css';
 
 const Checkout = () => {
-  const { user, token } = useAuth();
+  const { user, token, cartItems } = useAuth(); // Get cartItems from AuthContext
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     shippingAddress: '',
@@ -22,25 +21,8 @@ const Checkout = () => {
       navigate('/login');
       return;
     }
-    fetchCartItems();
+    // No need to fetch cart items here, as they are already available from AuthContext
   }, [user, token, navigate]);
-
-  const fetchCartItems = async () => {
-    try {
-      const response = await fetch('http://localhost:8080/api/cart/items', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.ok) {
-        const items = await response.json();
-        setCartItems(items);
-      }
-    } catch (error) {
-      console.error('Error fetching cart items:', error);
-    }
-  };
 
   const handleInputChange = (e) => {
     setFormData({
@@ -200,7 +182,7 @@ const Checkout = () => {
             </div>
 
             <button type="submit" className="btn-checkout" disabled={loading}>
-              {loading ? 'Processing...' : `Place Order - $${calculateTotal().toFixed(2)}`}
+              {loading ? 'Processing...' : `Place Order - ₺${calculateTotal().toFixed(2)}`}
             </button>
           </form>
         </div>
@@ -214,10 +196,10 @@ const Checkout = () => {
                 <div className="item-details">
                   <h4>{item.productName}</h4>
                   <p>Quantity: {item.quantity}</p>
-                  <p className="item-price">${item.productPrice.toFixed(2)}</p>
+                  <p className="item-price">₺{item.productPrice.toFixed(2)}</p>
                 </div>
                 <div className="item-total">
-                  ${(item.productPrice * item.quantity).toFixed(2)}
+                  ₺{(item.productPrice * item.quantity).toFixed(2)}
                 </div>
               </div>
             ))}
@@ -226,15 +208,15 @@ const Checkout = () => {
           <div className="order-totals">
             <div className="total-row">
               <span>Subtotal:</span>
-              <span>${calculateSubtotal().toFixed(2)}</span>
+              <span>₺{calculateSubtotal().toFixed(2)}</span>
             </div>
             <div className="total-row">
               <span>Shipping:</span>
-              <span>${calculateShipping().toFixed(2)}</span>
+              <span>₺{calculateShipping().toFixed(2)}</span>
             </div>
             <div className="total-row total">
               <span>Total:</span>
-              <span>${calculateTotal().toFixed(2)}</span>
+              <span>₺{calculateTotal().toFixed(2)}</span>
             </div>
           </div>
         </div>

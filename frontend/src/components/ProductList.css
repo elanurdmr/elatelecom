@@ -145,11 +145,12 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .btn-add-to-cart:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-add-to-favorites {
@@ -159,13 +160,24 @@
   padding: 10px 12px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   font-size: 16px;
+  display: flex; /* Ensure content is centered if using flex */
+  justify-content: center;
+  align-items: center;
 }
 
 .btn-add-to-favorites:hover {
   background: #ff6b6b;
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-add-to-favorites.active {
+  background: #ff6b6b;
+  color: white;
+  border-color: #ff6b6b;
 }
 
 .loading, .error, .no-products {
@@ -189,15 +201,15 @@
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
   }
-  
+
   .product-list {
     padding: 15px;
   }
-  
+
   .category-filters {
     gap: 10px;
   }
-  
+
   .category-filter {
     padding: 8px 16px;
     font-size: 13px;
@@ -208,19 +220,19 @@
   .products-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .product-info {
     padding: 15px;
   }
-  
+
   .product-name {
     font-size: 16px;
   }
-  
+
   .product-price {
     font-size: 18px;
   }
-  
+
   .category-filters {
     flex-direction: column;
     align-items: center;

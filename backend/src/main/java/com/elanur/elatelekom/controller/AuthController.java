@@ -53,8 +53,14 @@ public class AuthController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         String email = safe(request.getEmail());
         try {
-            String token = authService.login(email, request.getPassword());
-            User user = authService.getUserByEmail(email); // Kullanıcıyı burada al
+            User user = authService.login(email, request.getPassword());
+            String token = authService.getJwtUtil().generateToken(
+                    new org.springframework.security.core.userdetails.User(
+                            user.getEmail(),
+                            user.getPasswordHash(),
+                            user.getAuthorities()
+                    )
+            );
             return ResponseEntity.ok(Map.of(
                     "message", "Login successful!",
                     "token", token,

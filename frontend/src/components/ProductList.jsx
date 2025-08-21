@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './ProductList.css';
+import { FaHeart } from 'react-icons/fa'; // Added FaHeart import
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const { user, token } = useAuth();
+  const { user, token, addToCart, toggleFavorite, favoriteIds } = useAuth(); // Add addToCart, toggleFavorite, favoriteIds
 
   useEffect(() => {
     fetchProducts();
@@ -33,20 +34,18 @@ const ProductList = () => {
 
   const handleAddToCart = (product) => {
     if (!user || !token) {
-      alert('Sepete eklemek için giriş yapmanız gerekiyor!');
+      // alert('Sepete eklemek için giriş yapmanız gerekiyor!'); // Alert removed, AuthContext handles modal
       return;
     }
-    console.log('Adding to cart:', product);
-    alert(`${product.name} sepete eklendi!`);
+    addToCart(product); // Call AuthContext's addToCart
   };
 
   const handleAddToFavorites = (product) => {
     if (!user || !token) {
-      alert('Favorilere eklemek için giriş yapmanız gerekiyor!');
+      // alert('Favorilere eklemek için giriş yapmanız gerekiyor!'); // Alert removed, AuthContext handles modal
       return;
     }
-    console.log('Adding to favorites:', product);
-    alert(`${product.name} favorilere eklendi!`);
+    toggleFavorite(product.id); // Call AuthContext's toggleFavorite
   };
 
   const filteredProducts = selectedCategory === 'all' 
@@ -91,13 +90,13 @@ const ProductList = () => {
         {filteredProducts.map((product) => (
           <div key={product.id} className="product-card">
             <div className="product-image">
-              <img 
+              {/* <img 
                 src={product.image || '/placeholder-product.jpg'} 
                 alt={product.name}
                 onError={(e) => {
                   e.target.src = '/placeholder-product.jpg';
                 }}
-              />
+              /> */}
             </div>
             <div className="product-info">
               <h3 className="product-name">{product.name}</h3>
@@ -118,10 +117,10 @@ const ProductList = () => {
                   Sepete Ekle
                 </button>
                 <button
-                  className="btn-add-to-favorites"
+                  className={`btn-add-to-favorites ${favoriteIds.includes(product.id) ? 'active' : ''}`}
                   onClick={() => handleAddToFavorites(product)}
                 >
-                  ❤️
+                  <FaHeart />
                 </button>
               </div>
             </div>

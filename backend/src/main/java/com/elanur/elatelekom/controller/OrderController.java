@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.elanur.elatelekom.model.User;
+import com.elanur.elatelekom.service.AuthService;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -17,6 +19,8 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private AuthService authService;
 
     @PostMapping("/create")
     public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest request) {
@@ -68,7 +72,12 @@ public class OrderController {
 
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName(); // This will be the username
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User not authenticated.");
+        }
+        String userEmail = authentication.getName();
+        User user = authService.getUserByEmail(userEmail);
+        return user.getId();
     }
 
     // Request DTO

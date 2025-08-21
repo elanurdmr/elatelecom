@@ -6,9 +6,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Document(collection = "users")
 public class User implements UserDetails {
@@ -17,12 +20,9 @@ public class User implements UserDetails {
     private String id;
 
     @Indexed(unique = true)
-    private String username;
+    private String email;
 
     private String passwordHash; 
-
-    @Indexed(unique = true)
-    private String email;
 
     private String firstName;
     private String lastName;
@@ -37,6 +37,7 @@ public class User implements UserDetails {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<String> favoriteProductIds = new ArrayList<>(); // Yeni eklendi
 
     public enum UserRole {
         USER, ADMIN
@@ -47,11 +48,10 @@ public class User implements UserDetails {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public User(String username, String passwordHash, String email, String firstName, String lastName) {
+    public User(String email, String passwordHash, String firstName, String lastName) { // Updated constructor
         this();
-        this.username = username;
-        this.passwordHash = passwordHash;
         this.email = email;
+        this.passwordHash = passwordHash;
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -62,14 +62,6 @@ public class User implements UserDetails {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPasswordHash() {
@@ -182,7 +174,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override
@@ -190,7 +182,10 @@ public class User implements UserDetails {
         return passwordHash;
     }
 
-
+    @Override
+    public String getUsername() { // Changed to return email
+        return email; 
+    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -210,5 +205,14 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return active;
+    }
+
+    // Getter and Setter for favoriteProductIds
+    public List<String> getFavoriteProductIds() {
+        return favoriteProductIds;
+    }
+
+    public void setFavoriteProductIds(List<String> favoriteProductIds) {
+        this.favoriteProductIds = favoriteProductIds;
     }
 }

@@ -1,60 +1,40 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getProductById } from '../utils/services/productService';
 import './Favorites.css';
 
 const Favorites = () => {
-  const { user, token } = useAuth();
+  const { user, token, favoriteIds, addToCart, toggleFavorite } = useAuth();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Kullanıcı giriş yapmamışsa mock data göster
-    if (!user || !token) {
-      fetchFavorites();
-      return;
-    }
-    fetchFavorites();
-  }, [user, token, navigate]);
-
-  const fetchFavorites = async () => {
-    try {
-      // For now, we'll use a mock favorites list
-      // In the future, this would fetch from the backend
-      const mockFavorites = [
-        {
-          id: '1',
-          name: 'Sample Product 1',
-          price: 99.99,
-          image: '/placeholder-product.jpg',
-          description: 'This is a sample product description'
-        },
-        {
-          id: '2',
-          name: 'Sample Product 2',
-          price: 149.99,
-          image: '/placeholder-product.jpg',
-          description: 'Another sample product description'
-        }
-      ];
-      setFavorites(mockFavorites);
-    } catch (error) {
-      console.error('Error fetching favorites:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const fetchFavoriteProducts = async () => {
+      if (!user || !token || favoriteIds.length === 0) {
+        setFavorites([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        const fetchedProducts = await Promise.all(
+          favoriteIds.map(id => getProductById(id))
+        );
+        setFavorites(fetchedProducts);
+      } catch (error) {
+        console.error('Error fetching favorite products:', error);
+        setFavorites([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFavoriteProducts();
+  }, [user, token, favoriteIds]);
 
   const removeFromFavorites = (productId) => {
-    setFavorites(favorites.filter(item => item.id !== productId));
-  };
-
-  const addToCart = (product) => {
-    // This would add the product to cart via API
-    console.log('Adding to cart:', product);
-    // For now, just show an alert
-    alert(`${product.name} added to cart!`);
+    toggleFavorite(productId);
   };
 
   if (loading) {
@@ -68,8 +48,6 @@ const Favorites = () => {
   return (
     <div className="favorites-container">
       <div className="favorites-header">
-        <h1>My Favorites</h1>
-        <p>Your saved products and wishlist items</p>
       </div>
 
       {favorites.length === 0 ? (
@@ -85,7 +63,7 @@ const Favorites = () => {
           {favorites.map((product) => (
             <div key={product.id} className="favorite-item">
               <div className="product-image">
-                <img src={product.image} alt={product.name} />
+                {/* <img src={product.image} alt={product.name} /> */}
                 <button 
                   className="remove-favorite"
                   onClick={() => removeFromFavorites(product.id)}

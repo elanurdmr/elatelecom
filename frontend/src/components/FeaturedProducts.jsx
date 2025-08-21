@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './FeaturedProducts.css';
+import ProductCard from '../components/ProductCard'; // Import ProductCard
 
 const FeaturedProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const { user, token } = useAuth();
 
   useEffect(() => {
@@ -30,25 +32,11 @@ const FeaturedProducts = () => {
     }
   };
 
-  const handleAddToCart = (product) => {
-    if (!user || !token) {
-      alert('Sepete eklemek için giriş yapmanız gerekiyor!');
-      return;
-    }
-    // Sepete ekleme işlemi burada yapılacak
-    console.log('Adding to cart:', product);
-    alert(`${product.name} sepete eklendi!`);
-  };
+  const filteredProducts = selectedCategory === 'all' 
+    ? products 
+    : products.filter(product => product.category === selectedCategory);
 
-  const handleAddToFavorites = (product) => {
-    if (!user || !token) {
-      alert('Favorilere eklemek için giriş yapmanız gerekiyor!');
-      return;
-    }
-    // Favorilere ekleme işlemi burada yapılacak
-    console.log('Adding to favorites:', product);
-    alert(`${product.name} favorilere eklendi!`);
-  };
+  const categories = ['all', 'cihaz', 'sim', 'paket'];
 
   if (loading) {
     return (
@@ -69,39 +57,22 @@ const FeaturedProducts = () => {
   return (
     <div className="featured-products">
       <h2>Öne Çıkan Ürünler</h2>
+      <div className="category-filters">
+        {categories.map(category => (
+          <button
+            key={category}
+            className={`category-filter ${selectedCategory === category ? 'active' : ''}`}
+            onClick={() => setSelectedCategory(category)}
+          >
+            {category === 'all' ? 'Tümü' : 
+             category === 'cihaz' ? 'Cihazlar' :
+             category === 'sim' ? 'SIM Kartlar' : 'Tarife Paketleri'}
+          </button>
+        ))}
+      </div>
       <div className="products-grid">
-        {products.slice(0, 6).map((product) => (
-          <div key={product.id} className="product-card">
-            <div className="product-image">
-              <img 
-                src={product.image || '/placeholder-product.jpg'} 
-                alt={product.name}
-                onError={(e) => {
-                  e.target.src = '/placeholder-product.jpg';
-                }}
-              />
-            </div>
-            <div className="product-info">
-              <h3 className="product-name">{product.name}</h3>
-              <p className="product-description">{product.description}</p>
-              <p className="product-category">{product.category}</p>
-              <p className="product-price">₺{product.price.toLocaleString()}</p>
-              <div className="product-actions">
-                <button
-                  className="btn-add-to-cart"
-                  onClick={() => handleAddToCart(product)}
-                >
-                  Sepete Ekle
-                </button>
-                <button
-                  className="btn-add-to-favorites"
-                  onClick={() => handleAddToFavorites(product)}
-                >
-                  ❤️
-                </button>
-              </div>
-            </div>
-          </div>
+        {filteredProducts.slice(0, 6).map((product) => (
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
       <div className="view-all-container">

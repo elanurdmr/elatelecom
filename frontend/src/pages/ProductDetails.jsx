@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAppContext } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import AuthModal from '../components/AuthModal';
 import './ProductDetails.css';
 
 function ProductDetails() {
   const { id } = useParams();
-  const { isLoggedIn, setIsAuthModalOpen, favoriteIds, toggleFavorite, addToCart } = useAppContext();
+  const { user, setIsAuthModalOpen, favoriteIds, toggleFavorite, addToCart } = useAuth();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,7 +19,7 @@ function ProductDetails() {
   }, [id]);
 
   const handleAddToCart = () => {
-    if (!isLoggedIn) { setIsAuthModalOpen(true); return; }
+    if (!user) { setIsAuthModalOpen(true); return; }
     if (product) addToCart(product);
   };
 
@@ -32,7 +32,9 @@ function ProductDetails() {
   return (
     <div className="product-details">
       <div className="pd-card">
-        <div className="pd-thumb" />
+        {/* <div className="pd-thumb">
+          {product.image && <img src={product.image} alt={product.name} />}
+        </div> */}
         <div className="pd-info">
           <h1>{product.name}</h1>
           <div className="pd-price">{product.price} TL</div>

@@ -10,14 +10,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import com.elanur.elatelekom.model.User;
+import com.elanur.elatelekom.service.AuthService;
 
 @RestController
 @RequestMapping("/api/cart")
-@CrossOrigin(origins = "*")
 public class CartController {
 
     @Autowired
     private CartService cartService;
+    @Autowired
+    private AuthService authService;
 
     @PostMapping("/add")
     public ResponseEntity<CartItem> addToCart(@RequestBody AddToCartRequest request) {
@@ -71,7 +74,12 @@ public class CartController {
 
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getName();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("User not authenticated.");
+        }
+        String userEmail = authentication.getName();
+        User user = authService.getUserByEmail(userEmail);
+        return user.getId();
     }
 
     // Request DTOs

@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { useLocation } from 'react-router-dom'; // Import useLocation
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
@@ -9,17 +10,22 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
+import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import Footer from "./components/Footer";
 import { AppProvider } from "./context/AppContext";
 import { AuthProvider } from "./context/AuthContext";
+import OrderTracking from "./pages/OrderTracking";
 
 function App() {
+  const location = useLocation(); // Get current location
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   return (
     <AuthProvider>
       <AppProvider>
-        <Router>
-          <Navbar />
+        {!isAdminRoute && <Navbar />} {/* Conditionally render Navbar */}
+        <main style={{ flexGrow: 1 }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
@@ -30,10 +36,12 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/orders" element={<Orders />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/order-tracking/:orderId?" element={<OrderTracking />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
-          <Footer />
-        </Router>
+        </main>
+        <Footer />
       </AppProvider>
     </AuthProvider>
   );

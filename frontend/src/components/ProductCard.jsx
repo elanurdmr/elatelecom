@@ -1,14 +1,15 @@
 // src/components/ProductCard.jsx
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import { useAppContext } from "../context/AppContext";
+import { useAuth } from "../context/AuthContext";
+import { FaHeart } from 'react-icons/fa'; // Import FaHeart icon
 
 function ProductCard({ product }) {
-  const { isLoggedIn, addToCart, toggleFavorite, favoriteIds } = useAppContext();
+  const { user, addToCart, toggleFavorite, favoriteIds } = useAuth();
   const navigate = useNavigate();
 
   const handleAddToCart = () => {
-    if (!isLoggedIn) {
+    if (!user) {
       navigate("/login");
       return;
     }
@@ -16,7 +17,7 @@ function ProductCard({ product }) {
   };
 
   const handleToggleFavorite = () => {
-    if (!isLoggedIn) {
+    if (!user) {
       navigate("/login");
       return;
     }
@@ -25,12 +26,35 @@ function ProductCard({ product }) {
 
   return (
     <div className="product-card">
-      <h4>{product.name}</h4>
-      <p>{product.price}₺</p>
-      <button onClick={handleAddToCart}>Sepete Ekle</button>
-      <button onClick={handleToggleFavorite}>
-        {favoriteIds.includes(product.id) ? "Favorilerden Çıkar" : "Favorilere Ekle"}
-      </button>
+      {/* Ürün görseli buraya gelecek, şu anda yorum satırında */}
+      {/* {product.image && <img src={product.image} alt={product.name} className="product-image" />} */}
+      <div className="product-info">
+        <h3 className="product-name">{product.name}</h3>
+        {/* <p className="product-description">{product.description}</p> */}
+        {/* <span className="product-category">{product.category}</span> */}
+        <p className="product-price">₺{product.price.toFixed(2)}</p>
+      </div>
+
+      <div className="product-actions">
+        <button 
+          className="btn-add-to-cart"
+          onClick={handleAddToCart}
+        >
+          Sepete Ekle
+        </button>
+        <button 
+          className={`btn-add-to-favorites ${favoriteIds.includes(product.id) ? 'active' : ''}`}
+          onClick={handleToggleFavorite}
+        >
+          <FaHeart />
+        </button>
+        <button 
+          className="btn-view-details"
+          onClick={() => navigate(`/product/${product.id}`)}
+        >
+          Detayları Gör
+        </button>
+      </div>
     </div>
   );
 }

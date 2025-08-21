@@ -3,6 +3,7 @@ import './AdminDashboard.css'; // Create this CSS file for styling
 import UserManagement from './UserManagement';
 import ProductManagement from './ProductManagement';
 import OrderManagement from './OrderManagement';
+import AdminDashboardHome from './AdminDashboardHome'; // Import the new component
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard'); // 'dashboard', 'users', 'products', 'orders'
@@ -10,12 +11,7 @@ const AdminDashboard = () => {
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
-        return (
-          <>
-            <h1>Welcome to the Admin Dashboard</h1>
-            <p>Select a section from the sidebar to manage your store.</p>
-          </>
-        );
+        return <AdminDashboardHome />;
       case 'users':
         return <UserManagement />;
       case 'products':
@@ -29,15 +25,18 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
-      <aside className="admin-sidebar">
-        <h2>Admin Panel</h2>
-        <ul>
-          <li><a href="#" onClick={() => setActiveSection('dashboard')}>Dashboard</a></li>
-          <li><a href="#" onClick={() => setActiveSection('users')}>Users</a></li>
-          <li><a href="#" onClick={() => setActiveSection('products')}>Products</a></li>
-          <li><a href="#" onClick={() => setActiveSection('orders')}>Orders</a></li>
+      <nav className="admin-navbar">
+        <div className="admin-navbar-brand">
+          Admin Panel
+        </div>
+        <ul className="admin-nav-links">
+          <li><button type="button" className={activeSection === 'dashboard' ? 'active' : ''} onClick={() => setActiveSection('dashboard')}>Dashboard</button></li>
+          <li><button type="button" className={activeSection === 'users' ? 'active' : ''} onClick={() => setActiveSection('users')}>Users</button></li>
+          <li><button type="button" className={activeSection === 'products' ? 'active' : ''} onClick={() => setActiveSection('products')}>Products</button></li>
+          <li><button type="button" className={activeSection === 'orders' ? 'active' : ''} onClick={() => setActiveSection('orders')}>Orders</button></li>
         </ul>
-      </aside>
+      </nav>
+      
       <main className="admin-content">
         {renderContent()}
       </main>

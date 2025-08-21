@@ -12,6 +12,37 @@
   font-weight: 600;
 }
 
+.category-filters {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.category-filter {
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  color: #666;
+  padding: 10px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.category-filter:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.category-filter.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
 .products-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -94,12 +125,11 @@
 
 .product-actions {
   display: flex;
+  flex-direction: column; /* Match ProductList.css */
   gap: 10px;
-  align-items: center;
 }
 
 .btn-add-to-cart {
-  flex: 1;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
@@ -108,11 +138,12 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .btn-add-to-cart:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-add-to-favorites {
@@ -122,13 +153,40 @@
   padding: 10px 12px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   font-size: 16px;
+  display: flex; /* Ensure content is centered if using flex */
+  justify-content: center;
+  align-items: center;
 }
 
 .btn-add-to-favorites:hover {
   background: #ff6b6b;
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-add-to-favorites.active {
+  background: #ff6b6b;
+  color: white;
+  border-color: #ff6b6b;
+}
+
+.btn-view-details {
+  background: #f5f5f5;
+  color: #333;
+  text-decoration: none;
+  text-align: center;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.btn-view-details:hover {
+  background: #e0e0e0;
 }
 
 .view-all-container {
@@ -167,11 +225,11 @@
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
   }
-  
+
   .featured-products {
     padding: 20px 15px;
   }
-  
+
   .featured-products h2 {
     font-size: 24px;
   }
@@ -181,15 +239,15 @@
   .products-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .product-info {
     padding: 15px;
   }
-  
+
   .product-name {
     font-size: 16px;
   }
-  
+
   .product-price {
     font-size: 18px;
   }

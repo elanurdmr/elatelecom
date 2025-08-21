@@ -1,11 +1,11 @@
 import api from './api';
 
 export const getProducts = async () => {
-  return api('/admin/products');
+  return api('/products');
 };
 
 export const getProductById = async (id) => {
-  return api(`/admin/products/${id}`);
+  return api(`/products/${id}`);
 };
 
 export const createProduct = async (productData) => {
