@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/services/api';
 import AuthModal from '../components/AuthModal';
 import './ProductDetails.css';
 
@@ -12,10 +13,18 @@ function ProductDetails() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/products')
-      .then(res => { if (!res.ok) throw new Error('Sunucu hatası'); return res.json(); })
-      .then(data => { const p = data.find(x => String(x.id) === String(id)); setProduct(p); setLoading(false); })
-      .catch(err => { setError(err.message); setLoading(false); });
+    const fetchProduct = async () => {
+      try {
+        const data = await api("/products"); // Removed '/api' prefix
+        const p = data.find(x => String(x.id) === String(id));
+        setProduct(p);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
   }, [id]);
 
   const handleAddToCart = () => {

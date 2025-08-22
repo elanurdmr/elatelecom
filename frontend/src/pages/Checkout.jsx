@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/services/api'; // Import the api utility
 import './Checkout.css';
 
 const Checkout = () => {
@@ -51,26 +52,12 @@ const Checkout = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8080/api/orders/create', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        const order = await response.json();
-        alert(`Order created successfully! Order number: ${order.orderNumber}`);
-        navigate('/orders');
-      } else {
-        const error = await response.json();
-        alert(`Error: ${error.message || 'Failed to create order'}`);
-      }
+      const order = await api("/orders/create", "POST", formData); // Removed '/api' prefix
+      alert(`Order created successfully! Order number: ${order.orderNumber}`);
+      navigate('/orders');
     } catch (error) {
       console.error('Error creating order:', error);
-      alert('Failed to create order. Please try again.');
+      alert(`Failed to create order. ${error.message || 'Please try again.'}`);
     } finally {
       setLoading(false);
     }

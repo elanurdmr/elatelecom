@@ -2,6 +2,7 @@ package com.elanur.elatelekom.service;
 
 import com.elanur.elatelekom.config.JwtUtil;
 import com.elanur.elatelekom.model.User;
+import com.elanur.elatelekom.model.User.UserRole;
 import com.elanur.elatelekom.repository.UserRepository;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,10 @@ public class AuthService {
     }
 
     public User register(String email, String rawPassword, String firstName, String lastName) {
+        return createUserWithRole(email, rawPassword, firstName, lastName, UserRole.USER);
+    }
+
+    public User createUserWithRole(String email, String rawPassword, String firstName, String lastName, UserRole role) {
         if (email == null || email.isBlank() || rawPassword == null || rawPassword.isBlank()) {
             throw new IllegalArgumentException("Email and password are required");
         }
@@ -44,6 +49,7 @@ public class AuthService {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setPasswordHash(passwordEncoder.encode(rawPassword));
+        user.setRole(role); // Rolü ayarla
 
         try {
             return userRepository.save(user);
@@ -100,14 +106,32 @@ public class AuthService {
         return userRepository.save(user);
     }
 
+    public User updateUserRole(String userId, UserRole role) {
+        User user = getUserById(userId);
+        user.setRole(role);
+        user.updateTimestamp();
+        return userRepository.save(user);
+    }
+
+    public User updateUserPassword(String userId, String newPassword) {
+        User user = getUserById(userId);
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        user.updateTimestamp();
+        return userRepository.save(user);
+    }
+
     public void changePassword(String userId, String oldPassword, String newPassword) {
         User user = getUserById(userId);
-        if (!passwordEncoder.matches(oldPassword, user.getPasswordHash())) { // passwordHash kullan
+        if (!passwordEncoder.matches(oldPassword, user.getPasswordHash())) { 
             throw new RuntimeException("Current password is incorrect");
         }
-        user.setPasswordHash(passwordEncoder.encode(newPassword)); // passwordHash kullan
+        user.setPasswordHash(passwordEncoder.encode(newPassword)); 
         user.updateTimestamp();
         userRepository.save(user);
+    }
+
+    public void deleteUser(String userId) {
+        userRepository.deleteById(userId);
     }
 
     // Custom Exception for Authentication

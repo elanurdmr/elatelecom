@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.4</version>
+		<version>3.5.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.elanur</groupId>
@@ -13,21 +13,27 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>elatelekom</name>
 	<description>Project for Spring Boot</description>
-	<url/>
+	<url>https://example.com</url>
 	<licenses>
-		<license/>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
 	</licenses>
 	<developers>
-		<developer/>
+		<developer>
+			<name>Your Name</name>
+			<email>your.email@example.com</email>
+		</developer>
 	</developers>
 	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
+		<connection>scm:git:git://example.com/elatelekom.git</connection>
+		<developerConnection>scm:git:ssh://example.com/elatelekom.git</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://example.com/elatelekom</url>
 	</scm>
 	<properties>
-		<java.version>24</java.version>
+		<java.version>17</java.version>
 	</properties>
 	 
 	<dependencies>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/services/api'; // Import the api utility
 import './Register.css';
 
 const Register = () => {
@@ -20,7 +21,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
-  const {  } = useAuth(); // 'login' kaldırıldı
+  const login = useAuth().login; // Directly access login if needed, or remove if not used
 
   const handleChange = (e) => {
     setFormData({
@@ -42,25 +43,14 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      await api("/auth/register", "POST", formData); // Removed '/api' prefix
 
-      if (response.ok) {
-        setSuccess('Kayıt başarılı! E-posta doğrulama linki gönderildi.');
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Kayıt başarısız');
-      }
+      setSuccess('Kayıt başarılı! E-posta doğrulama linki gönderildi.');
+      setTimeout(() => {
+        navigate('/login');
+      }, 3000);
     } catch (err) {
-      setError('Sunucu hatası. Lütfen tekrar deneyin.');
+      setError(err.message || 'Sunucu hatası. Lütfen tekrar deneyin.');
     } finally {
       setLoading(false);
     }

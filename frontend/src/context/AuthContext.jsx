@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import api from "../utils/services/api";
 
 const AuthContext = createContext();
@@ -9,6 +10,7 @@ export function AuthProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   // Initialize user from localStorage
   useEffect(() => {
@@ -78,6 +80,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("user"); // Remove user object from localStorage
     setCartItems([]); // Clear cart on logout
     setFavoriteIds([]); // Clear favorites on logout
+    navigate('/'); // Redirect to home page after logout
   };
 
   const addToCart = async (product) => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/services/api';
 import './ProductList.css';
 import { FaHeart } from 'react-icons/fa'; // Added FaHeart import
 
@@ -17,16 +18,12 @@ const ProductList = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/products');
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data);
-      } else {
-        throw new Error('Ürünler yüklenemedi');
-      }
+      const data = await api("/products"); // Removed '/api' prefix
+      setProducts(data);
     } catch (err) {
       console.error('Error fetching products:', err);
       setError(err.message);
+      throw err; // Re-throw the error to be caught by the caller if needed
     } finally {
       setLoading(false);
     }
