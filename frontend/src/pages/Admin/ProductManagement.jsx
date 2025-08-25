@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getProducts, deleteProduct, createProduct, updateProduct } from '../../utils/services/productService';
+import './UserManagement.css'; // Import shared CSS
 
 const ProductManagement = () => {
   const [products, setProducts] = useState([]);
@@ -75,17 +76,17 @@ const ProductManagement = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="product-management">
-      <h2>Product Management</h2>
-      <button onClick={() => handleAddEdit()}>Add New Product</button>
+    <div className="user-management">
+      <h2>Ürün Yönetimi</h2>
+      <button onClick={() => handleAddEdit()} className="add-user-button">Yeni Ürün Ekle</button>
       <table>
         <thead>
           <tr>
             <th>ID</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Actions</th>
+            <th>Ad</th>
+            <th>Kategori</th>
+            <th>Fiyat</th>
+            <th>İşlemler</th>
           </tr>
         </thead>
         <tbody>
@@ -94,10 +95,10 @@ const ProductManagement = () => {
               <td>{product.id}</td>
               <td>{product.name}</td>
               <td>{product.category}</td>
-              <td>{product.price}</td>
+              <td>₺{product.price.toFixed(2)}</td>
               <td>
-                <button onClick={() => handleAddEdit(product)}>Edit</button>
-                <button onClick={() => handleDelete(product.id)}>Delete</button>
+                <button onClick={() => handleAddEdit(product)} className="edit-button">Düzenle</button>
+                <button onClick={() => handleDelete(product.id)} className="delete-button">Sil</button>
               </td>
             </tr>
           ))}
@@ -107,30 +108,30 @@ const ProductManagement = () => {
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h3>{currentProduct ? 'Edit Product' : 'Add Product'}</h3>
+            <h3>{currentProduct ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle'}</h3>
             <form onSubmit={handleSubmit}>
               <label>
-                Name:
+                Ad:
                 <input type="text" name="name" value={formData.name} onChange={handleChange} required />
               </label>
               <label>
-                Description:
+                Açıklama:
                 <textarea name="description" value={formData.description} onChange={handleChange} required></textarea>
               </label>
               <label>
-                Price:
+                Fiyat:
                 <input type="number" name="price" value={formData.price} onChange={handleChange} required step="0.01" />
               </label>
               <label>
-                Category:
+                Kategori:
                 <input type="text" name="category" value={formData.category} onChange={handleChange} required />
               </label>
               <label>
-                Image URL:
+                Resim URL:
                 <input type="text" name="imageUrl" value={formData.imageUrl} onChange={handleChange} />
               </label>
-              <button type="submit">Save</button>
-              <button type="button" onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button type="submit">Kaydet</button>
+              <button type="button" onClick={() => setIsModalOpen(false)}>İptal</button>
             </form>
           </div>
         </div>

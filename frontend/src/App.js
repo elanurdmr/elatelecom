@@ -16,6 +16,7 @@ import Footer from "./components/Footer";
 import { AppProvider } from "./context/AppContext";
 import { AuthProvider } from "./context/AuthContext";
 import OrderTracking from "./pages/OrderTracking";
+import GlobalAlert from "./components/GlobalAlert"; // Import GlobalAlert
 
 function App() {
   const location = useLocation(); // Get current location
@@ -38,10 +39,11 @@ function App() {
             <Route path="/orders" element={<Orders />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/order-tracking/:orderId?" element={<OrderTracking />} />
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Routes>
         </main>
         <Footer />
+        <GlobalAlert /> {/* Add GlobalAlert component here */}
       </AppProvider>
     </AuthProvider>
   );

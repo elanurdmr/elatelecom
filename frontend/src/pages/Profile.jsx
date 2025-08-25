@@ -77,7 +77,7 @@ function Profile() {
     }
 
     try {
-      await api(`/users/${user.id}/change-password`, 'PUT', {
+      await api(`/auth/users/${user.id}/change-password`, 'PUT', {
         oldPassword: passwordChangeData.currentPassword,
         newPassword: passwordChangeData.newPassword,
       });

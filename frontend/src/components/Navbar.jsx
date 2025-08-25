@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaStar, FaShoppingCart, FaUser } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
+import { FaTools } from "react-icons/fa"; // Import FaTools icon
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -49,6 +50,11 @@ function Navbar() {
         >
           <FaShoppingCart className="navbar-icon" />
         </Link>
+        {user && user.role === 'ADMIN' && (
+          <Link to="/admin/dashboard" className="icon-link admin-panel-icon" title="Admin Paneli">
+            <FaTools className="navbar-icon" /> {/* Use FaTools icon */}
+          </Link>
+        )}
         <div className="icon-link profile-wrapper" onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)} title="Profil">
           <FaUser className="navbar-icon" />
           {isProfileDropdownOpen && (

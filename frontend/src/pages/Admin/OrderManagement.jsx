@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getOrders, updateOrder, deleteOrder } from '../../utils/services/orderService';
+import './UserManagement.css'; // Import shared CSS
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
@@ -64,16 +65,16 @@ const OrderManagement = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="order-management">
-      <h2>Order Management</h2>
+    <div className="user-management">
+      <h2>Sipariş Yönetimi</h2>
       <table>
         <thead>
           <tr>
             <th>ID</th>
-            <th>User ID</th>
-            <th>Total Price</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Kullanıcı ID</th>
+            <th>Toplam Fiyat</th>
+            <th>Durum</th>
+            <th>İşlemler</th>
           </tr>
         </thead>
         <tbody>
@@ -81,11 +82,11 @@ const OrderManagement = () => {
             <tr key={order.id}>
               <td>{order.id}</td>
               <td>{order.userId}</td>
-              <td>{order.totalPrice}</td>
+              <td>₺{(order.total || 0).toFixed(2)}</td>
               <td>{order.status}</td>
               <td>
-                <button onClick={() => handleEdit(order)}>Edit</button>
-                <button onClick={() => handleDelete(order.id)}>Delete</button>
+                <button onClick={() => handleEdit(order)} className="edit-button">Düzenle</button>
+                <button onClick={() => handleDelete(order.id)} className="delete-button">Sil</button>
               </td>
             </tr>
           ))}
@@ -95,15 +96,15 @@ const OrderManagement = () => {
       {isModalOpen && (
         <div className="modal">
           <div className="modal-content">
-            <h3>Edit Order</h3>
+            <h3>Siparişi Düzenle</h3>
             <form onSubmit={handleSubmit}>
               <label>
-                Status:
+                Durum:
                 <input type="text" name="status" value={formData.status} onChange={handleChange} required />
               </label>
               {/* Add other fields for editing if needed */}
-              <button type="submit">Save</button>
-              <button type="button" onClick={() => setIsModalOpen(false)}>Cancel</button>
+              <button type="submit">Kaydet</button>
+              <button type="button" onClick={() => setIsModalOpen(false)}>İptal</button>
             </form>
           </div>
         </div>

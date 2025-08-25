@@ -103,12 +103,10 @@ public class AuthController {
     }
 
     // ---------- CHANGE PASSWORD ----------
-    @PostMapping(path = "/change-password", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+    @PutMapping(path = "/users/{userId}/change-password", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<?> changePassword(@PathVariable String userId, @RequestBody ChangePasswordRequest request) {
         try {
-            String email = currentUserEmail();
-            User user = authService.getUserByEmail(email);
-
+            User user = authService.getUserById(userId);
             authService.changePassword(user.getId(), request.getOldPassword(), request.getNewPassword());
             return ResponseEntity.ok(Map.of("message", "Password changed successfully!"));
         } catch (Exception e) {

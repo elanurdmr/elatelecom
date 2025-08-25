@@ -10,6 +10,8 @@ export function AuthProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [message, setMessage] = useState(null); // State for global messages
+  const [messageType, setMessageType] = useState(null); // 'success' or 'error'
   const navigate = useNavigate(); // Initialize useNavigate
 
   // Initialize user from localStorage
@@ -43,6 +45,15 @@ export function AuthProvider({ children }) {
     }
   }, [user, token]); // Re-run when user or token changes
 
+  const showMessage = (text, type = 'success') => {
+    setMessage(text);
+    setMessageType(type);
+    setTimeout(() => {
+      setMessage(null);
+      setMessageType(null);
+    }, 3000); // Message disappears after 3 seconds
+  };
+
   const login = async (email, password) => {
     const res = await api("/auth/login", "POST", { email, password });
     setToken(res.token);
@@ -66,6 +77,14 @@ export function AuthProvider({ children }) {
         setCartItems([]);
       }
       localStorage.setItem("user", JSON.stringify(res.user)); // Persist user object
+      
+      // Redirect based on user role
+      if (res.user.role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
+
     } else {
       setUser(null); // Kullanıcı nesnesi yoksa null yap
       setFavoriteIds([]);
@@ -89,29 +108,13 @@ export function AuthProvider({ children }) {
       return;
     }
     try {
-      // const response = await api("/cart/add", "POST", {
-      //   productId: product.id,
-      //   quantity: 1,
-      // });
-      // // Assuming the backend returns the updated cart item or a success message
-      // // You might want to refetch the entire cart here or update state more granularly
-      // setCartItems((prev) => {
-      //   const existingItemIndex = prev.findIndex(item => item.productId === product.id);
-      //   if (existingItemIndex > -1) {
-      //     const newCartItems = [...prev];
-      //     newCartItems[existingItemIndex].quantity += 1;
-      //     return newCartItems;
-      //   } else {
-      //     return [...prev, { ...product, quantity: 1, id: response.id }]; // Assuming response contains the new cart item ID
-      //   }
-      // });
       await api("/cart/add", "POST", { productId: product.id, quantity: 1 });
-      // After adding, refetch the cart to ensure consistency and immediate UI update
       const cartResponse = await api("/cart/items", "GET");
       setCartItems(cartResponse || []);
+      showMessage("Ürün sepete eklendi!", "success");
     } catch (error) {
       console.error("Failed to add to cart:", error);
-      // Optionally show an error to the user
+      showMessage("Sepete eklenirken bir hata oluştu.", "error");
     }
   };
 
@@ -143,28 +146,23 @@ export function AuthProvider({ children }) {
       return;
     }
     try {
-      // Assuming the backend returns the updated user object or just a success status
-      // For immediate UI feedback, we can optimistically update the state
-      await api(`/favorites/toggle/${productId}`, "POST");
-      // Optimistically update favoriteIds or refetch
-      setFavoriteIds((prev) => {
-        if (prev.includes(productId)) {
-          return prev.filter((id) => id !== productId);
-        } else {
-          return [...prev, productId];
-        }
-      });
-      // Optionally, refetch user data to ensure persisted favorites are loaded
-      // This would require an API endpoint to fetch the full user object including favorites
-      // For now, optimistic update is faster.
+      const updatedUser = await api(`/favorites/toggle/${productId}`, "POST");
+      console.log("Updated user from backend:", updatedUser); // Debugging line
+      setUser(updatedUser);
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setFavoriteIds(updatedUser.favoriteProductIds || []); // Update favoriteIds from the updated user
+
+      const isFavorited = updatedUser.favoriteProductIds.includes(productId);
+      showMessage(isFavorited ? "Ürün favorilere eklendi!" : "Ürün favorilerden kaldırıldı!", "success");
+
     } catch (error) {
       console.error("Failed to toggle favorite:", error);
-      // Optionally show an error to the user
+      showMessage("Favori güncellenirken bir hata oluştu.", "error");
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, cartItems, addToCart, favoriteIds, toggleFavorite, isAuthModalOpen, setIsAuthModalOpen, updateCartItemQuantity, removeCartItem }}>
+    <AuthContext.Provider value={{ user, token, login, logout, cartItems, addToCart, favoriteIds, toggleFavorite, isAuthModalOpen, setIsAuthModalOpen, updateCartItemQuantity, removeCartItem, message, messageType, showMessage }}>
       {children}
     </AuthContext.Provider>
   );

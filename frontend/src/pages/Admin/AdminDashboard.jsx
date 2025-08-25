@@ -4,9 +4,11 @@ import UserManagement from './UserManagement';
 import ProductManagement from './ProductManagement';
 import OrderManagement from './OrderManagement';
 import AdminDashboardHome from './AdminDashboardHome'; // Import the new component
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('dashboard'); // 'dashboard', 'users', 'products', 'orders'
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const renderContent = () => {
     switch (activeSection) {
@@ -35,6 +37,9 @@ const AdminDashboard = () => {
           <li><button type="button" className={activeSection === 'products' ? 'active' : ''} onClick={() => setActiveSection('products')}>Products</button></li>
           <li><button type="button" className={activeSection === 'orders' ? 'active' : ''} onClick={() => setActiveSection('orders')}>Orders</button></li>
         </ul>
+        <div className="admin-navbar-actions">
+          <button type="button" className="btn-secondary" onClick={() => navigate('/')}>Go to Home</button>
+        </div>
       </nav>
       
       <main className="admin-content">
