@@ -1,53 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../utils/services/api';
 import { FaTruck, FaBox, FaShippingFast, FaCheckCircle } from 'react-icons/fa';
 import './OrderTracking.css';
 
 function OrderTracking() {
-  const { orderId: paramOrderId } = useParams(); // URL'den sipariş ID'sini al
-  const [orderNumber] = useState('DEMO123'); // setOrderNumber is not used
+  const { orderId: paramOrderId } = useParams();
+  const navigate = useNavigate();
   const [orderStatus, setOrderStatus] = useState(null);
+  const [allOrders, setAllOrders] = useState([]);
+  const [singleOrderView, setSingleOrderView] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchOrderStatus = async (currentOrderId) => {
-    // If no specific order ID is provided, use a hardcoded demo order
-    if (!currentOrderId || currentOrderId === 'DEMO123') {
-      setOrderStatus({
-        orderNumber: 'DEMO123',
-        status: 'SHIPPED', // You can change this to PENDING, PROCESSING, DELIVERED
-        orderDate: new Date().toISOString(),
-        totalPrice: 150.75,
-        orderItems: [
-          { productId: 'prod1', productName: 'Demo Ürün 1', quantity: 1, price: 100.00 },
-          { productId: 'prod2', productName: 'Demo Ürün 2', quantity: 2, price: 25.375 }
-        ],
-        shippingAddress: 'Demo Adres Mah. Demo Cad. No:123',
-        shippingCity: 'Demo Şehir',
-        shippingPostalCode: '34000',
-        shippingCountry: 'Turkey',
-      });
-      setLoading(false);
-      return;
-    }
     setLoading(true);
     setError(null);
     try {
-      const response = await api(`/orders/number/${currentOrderId}`, 'GET');
-      setOrderStatus(response);
+      if (currentOrderId) {
+        const response = await api(`/orders/number/${currentOrderId}`, 'GET');
+        setOrderStatus(response);
+        setSingleOrderView(true);
+      } else {
+        const response = await api('/orders/user', 'GET');
+        setAllOrders(response ?? []);
+        setSingleOrderView(false);
+      }
     } catch (err) {
       console.error('Error fetching order status:', err);
       setError('Sipariş durumu yüklenirken bir hata oluştu. Lütfen sipariş numarasını kontrol edin.');
       setOrderStatus(null);
+      setAllOrders([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchOrderStatus(paramOrderId || orderNumber); // Use paramOrderId or default demo order number
-  }, [paramOrderId, orderNumber]);
+    console.log('useEffect triggered with paramOrderId:', paramOrderId);
+    fetchOrderStatus(paramOrderId);
+  }, [paramOrderId]);
 
   const getStatusStep = (status) => {
     switch (status) {
@@ -64,55 +56,108 @@ function OrderTracking() {
     }
   };
 
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return <FaBox className="icon" />;
+      case 'PROCESSING':
+        return <FaTruck className="icon" />;
+      case 'SHIPPED':
+        return <FaShippingFast className="icon" />;
+      case 'DELIVERED':
+        return <FaCheckCircle className="icon delivered" />;
+      default:
+        return null; // Return null for unknown statuses
+    }
+  };
+
+  const getTranslatedStatus = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return 'Hazırlanıyor';
+      case 'PROCESSING':
+        return 'İşleniyor';
+      case 'SHIPPED':
+        return 'Yola Çıktı';
+      case 'DELIVERED':
+        return 'Teslim Edildi';
+      default:
+        return status;
+    }
+  };
+
   return (
     <div className="order-tracking-container">
       <h2>Sipariş Takibi</h2>
+      {loading && <p>Yükleniyor...</p>}
+      {error && <p className="error-message">{error}</p>}
 
-      {loading && <div className="loading">Sipariş durumu yükleniyor...</div>}
-      {error && <div className="error-message">{error}</div>}
-
-      {orderStatus && (
-        <div className="tracking-details">
+      {singleOrderView && orderStatus && (
+        <div className="order-details-card">
           <h3>Sipariş #{orderStatus.orderNumber}</h3>
-          <p>Durum: <span className="current-status">{orderStatus.status}</span></p>
-
-          <div className="tracking-timeline">
-            <div className={`timeline-step ${getStatusStep(orderStatus.status) >= 1 ? 'active' : ''}`}>
-              <FaBox className="icon" />
-              <span>Sipariş Alındı</span>
-            </div>
-            <div className="timeline-line"></div>
-            <div className={`timeline-step ${getStatusStep(orderStatus.status) >= 2 ? 'active' : ''}`}>
-              <FaTruck className="icon" />
-              <span>Hazırlanıyor</span>
-            </div>
-            <div className="timeline-line"></div>
-            <div className={`timeline-step ${getStatusStep(orderStatus.status) >= 3 ? 'active' : ''}`}>
-              <FaShippingFast className="icon" />
-              <span>Yola Çıktı</span>
-            </div>
-            <div className="timeline-line"></div>
-            <div className={`timeline-step ${getStatusStep(orderStatus.status) >= 4 ? 'active' : ''}`}>
-              <FaCheckCircle className="icon" />
-              <span>Teslim Edildi</span>
-            </div>
-          </div>
-
-          <div className="delivery-truck-animation">
-            <FaTruck className="delivery-truck" />
-          </div>
-
-          <p className="order-date">Sipariş Tarihi: {new Date(orderStatus.orderDate).toLocaleDateString()}</p>
-          <p className="order-total">Toplam Tutar: ₺{(orderStatus.totalPrice || 0).toFixed(2)}</p>
-          <h4>Sipariş İçeriği:</h4>
-          <ul className="order-items-list">
-            {orderStatus.orderItems && orderStatus.orderItems.map(item => (
+          <p>Durum: {getTranslatedStatus(orderStatus.status)} {getStatusIcon(orderStatus.status)}</p>
+          <p>Tarih: {new Date(orderStatus.orderDate).toLocaleDateString()}</p>
+          <p>Toplam Tutar: {(orderStatus.total || 0).toFixed(2)} TL</p>
+          <h4>Ürünler:</h4>
+          <ul>
+            {(orderStatus.orderItems ?? []).map((item) => (
               <li key={item.productId}>
-                {item.productName} (x{item.quantity}) - ₺{item.price.toFixed(2)}
+                {item.productName} (x{item.quantity}) - {item.price} TL
               </li>
             ))}
           </ul>
+          <h4>Teslimat Adresi:</h4>
+          <p>{orderStatus.shippingAddress}, {orderStatus.shippingCity}, {orderStatus.shippingPostalCode}, {orderStatus.shippingCountry}</p>
+          
+          {console.log('Current Order Status:', orderStatus.status)}
+          <div className="tracking-timeline">
+            <div className={`timeline-step ${getStatusStep(orderStatus.status || 'PENDING') >= 1 ? 'active' : ''}`}>
+              <FaBox className="icon" />
+              <span>{getTranslatedStatus('PENDING')}</span>
+            </div>
+            <div className={`timeline-step ${getStatusStep(orderStatus.status || 'PENDING') >= 2 ? 'active' : ''}`}>
+              <FaTruck className="icon" />
+              <span>{getTranslatedStatus('PROCESSING')}</span>
+            </div>
+            <div className={`timeline-step ${getStatusStep(orderStatus.status || 'PENDING') >= 3 ? 'active' : ''}`}>
+              <FaShippingFast className="icon" />
+              <span>{getTranslatedStatus('SHIPPED')}</span>
+            </div>
+            <div className={`timeline-step ${getStatusStep(orderStatus.status || 'PENDING') >= 4 ? 'active' : ''}`}>
+              <FaCheckCircle className="icon" />
+              <span>{getTranslatedStatus('DELIVERED')}</span>
+            </div>
+            <div className="timeline-line"></div>
+          </div>
+
+          {((orderStatus.status || 'PENDING') === 'PROCESSING' || (orderStatus.status || 'PENDING') === 'SHIPPED') && (
+            <div className="delivery-truck-animation">
+              <FaTruck className="delivery-truck" />
+            </div>
+          )}
+
+          <button onClick={() => navigate('/order-tracking')} className="btn-back-to-all-orders">Tüm Siparişlere Geri Dön</button>
         </div>
+      )}
+
+      {!singleOrderView && allOrders.length > 0 && (
+        <div className="all-orders-list">
+          <h3>Tüm Siparişleriniz ({allOrders.length})</h3>
+          <p className="total-orders-amount">Toplam Sipariş Tutarı: {allOrders.reduce((acc, order) => acc + order.total, 0).toFixed(2)} TL</p>
+          {allOrders.map((order) => (
+            <div key={order.orderNumber} className="order-card">
+              <h4>Sipariş #{order.orderNumber}</h4>
+              <p>Durum: {getTranslatedStatus(order.status)} {getStatusIcon(order.status)}</p>
+              <p>Toplam Tutar: {(order.total || 0).toFixed(2)} TL</p>
+              <p>Tarih: {new Date(order.orderDate).toLocaleDateString()}</p>
+              <button onClick={() => navigate(`/order-tracking/${order.orderNumber}`)} className="btn-track-order">Sipariş Detayı</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!singleOrderView && !loading && !error && allOrders.length === 0 && (
+        <p>Henüz bir siparişiniz bulunmamaktadır.</p>
       )}
     </div>
   );

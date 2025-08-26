@@ -46,6 +46,24 @@
   background: #0056b3;
 }
 
+.btn-back-to-all-orders {
+  padding: 12px 25px;
+  background: #6c757d; /* A more neutral, but still clear color */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 20px; /* Add some space above the button */
+}
+
+.btn-back-to-all-orders:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
 .loading, .error-message {
   padding: 20px;
   font-size: 1.1rem;

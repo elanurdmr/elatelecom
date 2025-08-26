@@ -11,6 +11,21 @@ const Orders = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const getTranslatedStatus = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return 'Hazırlanıyor';
+      case 'PROCESSING':
+        return 'İşleniyor';
+      case 'SHIPPED':
+        return 'Yola Çıktı';
+      case 'DELIVERED':
+        return 'Teslim Edildi';
+      default:
+        return status;
+    }
+  };
+
   useEffect(() => {
     if (!user || !token) {
       setLoading(false);
@@ -48,11 +63,13 @@ const Orders = () => {
         <p>You have no orders yet.</p>
       ) : (
         <div className="orders-list">
+          <h2>Tüm Siparişler ({orders.length})</h2>
+          <p>Toplam Sipariş Tutarı: {orders.reduce((acc, order) => acc + order.total, 0).toFixed(2)} TL</p>
           {orders.map((order) => (
             <div key={order.id} className="order-card">
               <h3>Order #{order.orderNumber}</h3>
-              <p>Status: {order.status}</p>
-              <p>Total: {order.totalAmount} TL</p>
+              <p>Status: {getTranslatedStatus(order.status)}</p>
+              <p>Total: {(order.total || 0).toFixed(2)} TL</p>
               <p>Date: {new Date(order.orderDate).toLocaleDateString()}</p>
               <h4>Items:</h4>
               <ul>

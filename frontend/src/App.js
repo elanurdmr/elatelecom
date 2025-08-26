@@ -12,6 +12,11 @@ import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+import Hakkimizda from "./pages/Hakkimizda";
+import Iletisim from "./pages/Iletisim";
+import GizlilikPolitikasi from "./pages/GizlilikPolitikasi";
+import KullanimKosullari from "./pages/KullanimKosullari";
+import SikcaSorulanSorular from "./pages/SikcaSorulanSorular";
 import Footer from "./components/Footer";
 import { AppProvider } from "./context/AppContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -40,6 +45,11 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/order-tracking/:orderId?" element={<OrderTracking />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/about" element={<Hakkimizda />} />
+            <Route path="/contact" element={<Iletisim />} />
+            <Route path="/privacy" element={<GizlilikPolitikasi />} />
+            <Route path="/terms" element={<KullanimKosullari />} />
+            <Route path="/faq" element={<SikcaSorulanSorular />} />
           </Routes>
         </main>
         <Footer />
