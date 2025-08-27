@@ -45,12 +45,16 @@ function OrderTracking() {
     switch (status) {
       case 'PENDING':
         return 1;
-      case 'PROCESSING':
+      case 'CONFIRMED':
         return 2;
-      case 'SHIPPED':
+      case 'PROCESSING':
         return 3;
-      case 'DELIVERED':
+      case 'SHIPPED':
         return 4;
+      case 'DELIVERED':
+        return 5;
+      case 'CANCELLED':
+        return 0; // İptal edilen sipariş için adımı sıfır yap
       default:
         return 0;
     }
@@ -81,6 +85,8 @@ function OrderTracking() {
         return 'Yola Çıktı';
       case 'DELIVERED':
         return 'Teslim Edildi';
+      case 'CANCELLED':
+        return 'İptal Edildi';
       default:
         return status;
     }
@@ -94,7 +100,7 @@ function OrderTracking() {
 
       {singleOrderView && orderStatus && (
         <div className="order-details-card">
-          <h3>Sipariş #{orderStatus.orderNumber}</h3>
+          <h3>Sipariş No: {orderStatus.orderNumber}</h3>
           <p>Durum: {getTranslatedStatus(orderStatus.status)} {getStatusIcon(orderStatus.status)}</p>
           <p>Tarih: {new Date(orderStatus.orderDate).toLocaleDateString()}</p>
           <p>Toplam Tutar: {(orderStatus.total || 0).toFixed(2)} TL</p>
@@ -111,26 +117,32 @@ function OrderTracking() {
           
           {console.log('Current Order Status:', orderStatus.status)}
           <div className="tracking-timeline">
-            <div className={`timeline-step ${getStatusStep(orderStatus.status || 'PENDING') >= 1 ? 'active' : ''}`}>
+            <div className={`timeline-step ${getStatusStep(orderStatus.status) >= 1 && orderStatus.status !== 'CANCELLED' ? 'active' : ''}`}>
               <FaBox className="icon" />
               <span>{getTranslatedStatus('PENDING')}</span>
             </div>
-            <div className={`timeline-step ${getStatusStep(orderStatus.status || 'PENDING') >= 2 ? 'active' : ''}`}>
+            <div className={`timeline-step ${getStatusStep(orderStatus.status) >= 3 && orderStatus.status !== 'CANCELLED' ? 'active' : ''}`}>
               <FaTruck className="icon" />
               <span>{getTranslatedStatus('PROCESSING')}</span>
             </div>
-            <div className={`timeline-step ${getStatusStep(orderStatus.status || 'PENDING') >= 3 ? 'active' : ''}`}>
+            <div className={`timeline-step ${getStatusStep(orderStatus.status) >= 4 && orderStatus.status !== 'CANCELLED' ? 'active' : ''}`}>
               <FaShippingFast className="icon" />
               <span>{getTranslatedStatus('SHIPPED')}</span>
             </div>
-            <div className={`timeline-step ${getStatusStep(orderStatus.status || 'PENDING') >= 4 ? 'active' : ''}`}>
+            <div className={`timeline-step ${getStatusStep(orderStatus.status) >= 5 && orderStatus.status !== 'CANCELLED' ? 'active' : ''}`}>
               <FaCheckCircle className="icon" />
               <span>{getTranslatedStatus('DELIVERED')}</span>
             </div>
+            {orderStatus.status === 'CANCELLED' && (
+              <div className="timeline-step active cancelled">
+                <FaCheckCircle className="icon" />
+                <span>{getTranslatedStatus('CANCELLED')}</span>
+              </div>
+            )}
             <div className="timeline-line"></div>
           </div>
 
-          {((orderStatus.status || 'PENDING') === 'PROCESSING' || (orderStatus.status || 'PENDING') === 'SHIPPED') && (
+          {((orderStatus.status || 'PENDING') === 'PROCESSING' || (orderStatus.status || 'PENDING') === 'SHIPPED') && orderStatus.status !== 'CANCELLED' && (
             <div className="delivery-truck-animation">
               <FaTruck className="delivery-truck" />
             </div>
@@ -146,7 +158,7 @@ function OrderTracking() {
           <p className="total-orders-amount">Toplam Sipariş Tutarı: {allOrders.reduce((acc, order) => acc + order.total, 0).toFixed(2)} TL</p>
           {allOrders.map((order) => (
             <div key={order.orderNumber} className="order-card">
-              <h4>Sipariş #{order.orderNumber}</h4>
+              <h4>Sipariş No: {order.orderNumber}</h4>
               <p>Durum: {getTranslatedStatus(order.status)} {getStatusIcon(order.status)}</p>
               <p>Toplam Tutar: {(order.total || 0).toFixed(2)} TL</p>
               <p>Tarih: {new Date(order.orderDate).toLocaleDateString()}</p>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getOrders, updateOrder, deleteOrder } from '../../utils/services/orderService';
+import { getOrders, updateOrder, deleteOrder, updateOrderStatus } from '../../utils/services/orderService';
 import './UserManagement.css'; // Import shared CSS
 
 const OrderManagement = () => {
@@ -12,6 +12,25 @@ const OrderManagement = () => {
     status: '',
     // Add other relevant order fields here if needed
   });
+
+  const getTranslatedStatus = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return 'Hazırlanıyor';
+      case 'CONFIRMED':
+        return 'Onaylandı';
+      case 'PROCESSING':
+        return 'İşleniyor';
+      case 'SHIPPED':
+        return 'Yola Çıktı';
+      case 'DELIVERED':
+        return 'Teslim Edildi';
+      case 'CANCELLED':
+        return 'İptal Edildi';
+      default:
+        return status;
+    }
+  };
 
   useEffect(() => {
     fetchOrders();
@@ -30,7 +49,7 @@ const OrderManagement = () => {
   };
 
   const handleDelete = async (orderId) => {
-    if (window.confirm('Are you sure you want to delete this order?')) {
+    if (window.confirm('Bu siparişi silmek istediğinize emin misiniz?')) {
       try {
         await deleteOrder(orderId);
         fetchOrders(); // Refresh the list after deletion
@@ -53,7 +72,7 @@ const OrderManagement = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateOrder(currentOrder.id, formData);
+      await updateOrderStatus(currentOrder.id, formData.status);
       fetchOrders(); // Refresh the list
       setIsModalOpen(false);
     } catch (err) {
@@ -61,8 +80,8 @@ const OrderManagement = () => {
     }
   };
 
-  if (loading) return <div>Loading orders...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div>Siparişler yükleniyor...</div>;
+  if (error) return <div>Hata: {error}</div>;
 
   return (
     <div className="user-management">
@@ -83,7 +102,7 @@ const OrderManagement = () => {
               <td>{order.id}</td>
               <td>{order.userId}</td>
               <td>₺{(order.total || 0).toFixed(2)}</td>
-              <td>{order.status}</td>
+              <td>{getTranslatedStatus(order.status)}</td>
               <td>
                 <button onClick={() => handleEdit(order)} className="edit-button">Düzenle</button>
                 <button onClick={() => handleDelete(order.id)} className="delete-button">Sil</button>
@@ -100,7 +119,13 @@ const OrderManagement = () => {
             <form onSubmit={handleSubmit}>
               <label>
                 Durum:
-                <input type="text" name="status" value={formData.status} onChange={handleChange} required />
+                <select name="status" value={formData.status} onChange={handleChange} required>
+                  {[ 'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED' ].map(statusOption => (
+                    <option key={statusOption} value={statusOption}>
+                      {getTranslatedStatus(statusOption)}
+                    </option>
+                  ))}
+                </select>
               </label>
               {/* Add other fields for editing if needed */}
               <button type="submit">Kaydet</button>

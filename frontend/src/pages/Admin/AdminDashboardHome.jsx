@@ -15,6 +15,25 @@ const AdminDashboardHome = () => {
   const [recentOrders, setRecentOrders] = useState([]);
   const [topFavoriteProducts, setTopFavoriteProducts] = useState([]);
 
+  const getTranslatedStatus = (status) => {
+    switch (status) {
+      case 'PENDING':
+        return 'Hazırlanıyor';
+      case 'CONFIRMED':
+        return 'Onaylandı';
+      case 'PROCESSING':
+        return 'İşleniyor';
+      case 'SHIPPED':
+        return 'Yola Çıktı';
+      case 'DELIVERED':
+        return 'Teslim Edildi';
+      case 'CANCELLED':
+        return 'İptal Edildi';
+      default:
+        return status;
+    }
+  };
+
   // Helper to fetch product details for favorite IDs
   const fetchProductDetails = useCallback(async (productIds) => {
     try {
@@ -71,68 +90,68 @@ const AdminDashboardHome = () => {
   }, [token, fetchProductDetails]); // Add fetchProductDetails to dependency array
 
   if (loading) {
-    return <div className="admin-dashboard-home-loading">Loading dashboard data...</div>;
+    return <div className="admin-dashboard-home-loading">Panel verileri yükleniyor...</div>;
   }
 
   if (error) {
-    return <div className="admin-dashboard-home-error">Error: {error}</div>;
+    return <div className="admin-dashboard-home-error">Hata: {error}</div>;
   }
 
   return (
     <div className="admin-dashboard-home">
-      <h2>Dashboard Overview</h2>
+      <h2>Yönetim Paneli Genel Bakış</h2>
       <div className="stats-grid">
         <div className="stat-card">
-          <h3>Total Users</h3>
+          <h3>Toplam Kullanıcı</h3>
           <p className="stat-number">{userCount}</p>
         </div>
         <div className="stat-card">
-          <h3>Total Products</h3>
+          <h3>Toplam Ürün</h3>
           <p className="stat-number">{productCount}</p>
         </div>
         <div className="stat-card">
-          <h3>Total Orders</h3>
+          <h3>Toplam Sipariş</h3>
           <p className="stat-number">{orderCount}</p>
         </div>
       </div>
 
       <div className="dashboard-sections">
         <div className="section-card">
-          <h3>Recent Users</h3>
+          <h3>Son Kullanıcılar</h3>
           {recentUsers.length > 0 ? (
             <ul className="list-unstyled">
               {recentUsers.map(user => (
-                <li key={user.id}><strong>{user.firstName} {user.lastName}</strong> ({user.email}) - Joined: {new Date(user.createdAt).toLocaleDateString()}</li>
+                <li key={user.id}><strong>{user.firstName} {user.lastName}</strong> ({user.email}) - Katılma Tarihi: {new Date(user.createdAt).toLocaleDateString()}</li>
               ))}
             </ul>
           ) : (
-            <p>No recent users.</p>
+            <p>Son kullanıcı bulunamadı.</p>
           )}
         </div>
 
         <div className="section-card">
-          <h3>Recent Orders</h3>
+          <h3>Son Siparişler</h3>
           {recentOrders.length > 0 ? (
             <ul className="list-unstyled">
               {recentOrders.map(order => (
-                <li key={order.id}><strong>Order #{order.orderNumber}</strong> - Status: {order.status} - Total: ₺{(order.totalPrice || 0).toFixed(2)} - Date: {new Date(order.createdAt).toLocaleDateString()}</li>
+                <li key={order.id}><strong>Sipariş No: {order.orderNumber}</strong> - Durum: {getTranslatedStatus(order.status)} - Toplam: ₺{(order.total || 0).toFixed(2)} - Tarih: {new Date(order.createdAt).toLocaleDateString()}</li>
               ))}
             </ul>
           ) : (
-            <p>No recent orders.</p>
+            <p>Son sipariş bulunamadı.</p>
           )}
         </div>
 
         <div className="section-card">
-          <h3>Top Favorite Products</h3>
+          <h3>En Çok Favorilenen Ürünler</h3>
           {topFavoriteProducts.length > 0 ? (
             <ul className="list-unstyled">
               {topFavoriteProducts.map(product => (
-                <li key={product.id}><strong>{product.name}</strong> - Favorited: {product.favoriteCount} times</li>
+                <li key={product.id}><strong>{product.name}</strong> - Favorilenme: {product.favoriteCount} kez</li>
               ))}
             </ul>
           ) : (
-            <p>No favorite products found or data not available.</p>
+            <p>Favori ürün bulunamadı veya veri mevcut değil.</p>
           )}
         </div>
       </div>

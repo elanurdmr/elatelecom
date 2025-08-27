@@ -81,6 +81,7 @@ public class OrderService {
 
     public Order updateOrderStatus(String orderId, Order.OrderStatus status) {
         Order order = getOrderById(orderId);
+        System.out.println("Updating order " + orderId + " status to: " + status);
         order.setStatus(status);
         
         if (status == Order.OrderStatus.SHIPPED) {
@@ -89,6 +90,19 @@ public class OrderService {
             order.setDeliveredAt(LocalDateTime.now());
         }
         
+        order.updateTimestamp();
+        return orderRepository.save(order);
+    }
+
+    public Order cancelOrder(String orderId, String cancelReason) {
+        Order order = getOrderById(orderId);
+        if (order.getStatus() == Order.OrderStatus.DELIVERED || 
+            order.getStatus() == Order.OrderStatus.CANCELLED ||
+            order.getStatus() == Order.OrderStatus.SHIPPED) {
+            throw new RuntimeException("Sipariş teslim edildi, yola çıktı veya zaten iptal edildiği için iptal edilemez.");
+        }
+        order.setStatus(Order.OrderStatus.CANCELLED);
+        order.setCancelReason(cancelReason); // Set the cancel reason
         order.updateTimestamp();
         return orderRepository.save(order);
     }

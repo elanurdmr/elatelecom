@@ -27,6 +27,7 @@ public class Order {
     private LocalDateTime updatedAt;
     private LocalDateTime shippedAt;
     private LocalDateTime deliveredAt;
+    private String cancelReason;
 
     public enum OrderStatus {
         PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
@@ -180,6 +181,14 @@ public class Order {
 
     public void setDeliveredAt(LocalDateTime deliveredAt) {
         this.deliveredAt = deliveredAt;
+    }
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
+
+    public void setCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
     }
 
     public void updateTimestamp() {

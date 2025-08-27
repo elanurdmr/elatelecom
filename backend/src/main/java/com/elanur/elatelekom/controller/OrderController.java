@@ -70,6 +70,47 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @PutMapping("/{orderId}/cancel")
+    public ResponseEntity<Order> cancelOrder(@PathVariable String orderId, @RequestBody CancelOrderRequest request) {
+        String userId = getCurrentUserId();
+        Order order = orderService.getOrderById(orderId);
+
+        // Check if user owns this order or is admin
+        if (!order.getUserId().equals(userId)) {
+            return ResponseEntity.status(403).build();
+        }
+
+        try {
+            Order cancelledOrder = orderService.cancelOrder(orderId, request.getCancelReason());
+            return ResponseEntity.ok(cancelledOrder);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null); // Hata durumunda boş gövde döndür
+        }
+    }
+
+    // Admin only: Update order status
+    @PutMapping("/admin/{orderId}/status")
+    public ResponseEntity<Order> updateOrderStatus(@PathVariable String orderId, @RequestBody UpdateOrderStatusRequest request) {
+        // Admin rolü kontrolü
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body(null); // Yetkilendirilmemiş
+        }
+        String userEmail = authentication.getName();
+        User currentUser = authService.getUserByEmail(userEmail);
+
+        if (currentUser == null || currentUser.getRole() != User.UserRole.ADMIN) {
+            return ResponseEntity.status(403).body(null); // Yasak - Admin değil
+        }
+
+        try {
+            Order updatedOrder = orderService.updateOrderStatus(orderId, request.getStatus());
+            return ResponseEntity.ok(updatedOrder);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {
@@ -107,5 +148,29 @@ public class OrderController {
 
         public String getNotes() { return notes; }
         public void setNotes(String notes) { this.notes = notes; }
+    }
+
+    public static class CancelOrderRequest {
+        private String cancelReason;
+
+        public String getCancelReason() {
+            return cancelReason;
+        }
+
+        public void setCancelReason(String cancelReason) {
+            this.cancelReason = cancelReason;
+        }
+    }
+
+    public static class UpdateOrderStatusRequest {
+        private Order.OrderStatus status;
+
+        public Order.OrderStatus getStatus() {
+            return status;
+        }
+
+        public void setStatus(Order.OrderStatus status) {
+            this.status = status;
+        }
     }
 }

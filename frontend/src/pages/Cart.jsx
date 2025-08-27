@@ -29,15 +29,15 @@ function Cart() {
   return (
     <div className="cart-page">
       <div className="cart-header">
-        {/* Clear Cart Button removed per user request */}
+        <h2>Sepetim</h2>
       </div>
 
       {cartItems.length === 0 ? (
         <div className="cart-empty">
-          <h2>Your cart is empty</h2>
-          <p>Add some products to your cart to get started!</p>
+          <h2>Sepetiniz boş</h2>
+          <p>Alışverişe başlamak için sepetinize ürün ekleyin!</p>
           <button onClick={() => navigate('/products')} className="btn-continue-shopping">
-            Continue Shopping
+            Alışverişe Devam Et
           </button>
         </div>
       ) : (
@@ -81,17 +81,17 @@ function Cart() {
           </div>
 
           <div className="cart-summary">
-            <h3>Order Summary</h3>
+            <h3>Sipariş Özeti</h3>
             <div className="summary-row">
-              <span>Subtotal:</span>
+              <span>Ara Toplam:</span>
               <span>₺{calculateTotal().toFixed(2)}</span>
             </div>
             <div className="summary-row">
-              <span>Shipping:</span>
+              <span>Kargo:</span>
               <span>₺{cartItems.length > 0 ? 10 : 0}</span>
             </div>
             <div className="summary-row total">
-              <span>Total:</span>
+              <span>Toplam:</span>
               <span>₺{(calculateTotal() + (cartItems.length > 0 ? 10 : 0)).toFixed(2)}</span>
             </div>
             
@@ -100,14 +100,14 @@ function Cart() {
               className="btn-checkout"
               disabled={cartItems.length === 0}
             >
-              Proceed to Checkout
+              Ödeme Sayfasına Git
             </button>
             
             <button 
               onClick={() => navigate('/products')}
               className="btn-continue-shopping"
             >
-              Continue Shopping
+              Alışverişe Devam Et
             </button>
           </div>
         </div>

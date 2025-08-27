@@ -108,7 +108,13 @@ export function AuthProvider({ children }) {
       return;
     }
     try {
-      await api("/cart/add", "POST", { productId: product.id, quantity: 1 });
+      await api("/cart/add", "POST", { 
+        productId: product.id, 
+        productName: product.name, 
+        productImage: product.image, 
+        productPrice: product.price, 
+        quantity: 1 
+      });
       const cartResponse = await api("/cart/items", "GET");
       setCartItems(cartResponse || []);
       showMessage("Ürün sepete eklendi!", "success");

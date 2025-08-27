@@ -40,7 +40,7 @@ const Favorites = () => {
   if (loading) {
     return (
       <div className="favorites-container">
-        <div className="loading">Loading favorites...</div>
+        <div className="loading">Favoriler yükleniyor...</div>
       </div>
     );
   }
@@ -48,14 +48,15 @@ const Favorites = () => {
   return (
     <div className="favorites-container">
       <div className="favorites-header">
+        <h2>Favori Ürünlerim</h2>
       </div>
 
       {favorites.length === 0 ? (
         <div className="favorites-empty">
-          <h2>No favorites yet</h2>
-          <p>Start adding products to your favorites to see them here!</p>
+          <h2>Henüz favorilenmiş ürün yok</h2>
+          <p>Favorilerinize ürün eklemeye başlayın!</p>
           <button onClick={() => navigate('/products')} className="btn-primary">
-            Browse Products
+            Ürünlere Göz At
           </button>
         </div>
       ) : (
@@ -63,11 +64,11 @@ const Favorites = () => {
           {favorites.map((product) => (
             <div key={product.id} className="favorite-item">
               <div className="product-image">
-                {/* <img src={product.image} alt={product.name} /> */}
+                {/* <img src={product.image} alt={product.name} */}
                 <button 
                   className="remove-favorite"
                   onClick={() => removeFromFavorites(product.id)}
-                  title="Remove from favorites"
+                  title="Favorilerden Kaldır"
                 >
                   ×
                 </button>
@@ -75,19 +76,19 @@ const Favorites = () => {
               <div className="product-info">
                 <h3 className="product-name">{product.name}</h3>
                 <p className="product-description">{product.description}</p>
-                <p className="product-price">${product.price.toFixed(2)}</p>
+                <p className="product-price">{product.price.toFixed(2)} TL</p>
                 <div className="product-actions">
                   <button 
                     className="btn-add-to-cart"
                     onClick={() => addToCart(product)}
                   >
-                    Add to Cart
+                    Sepete Ekle
                   </button>
                   <button 
                     className="btn-view-details"
                     onClick={() => navigate(`/product/${product.id}`)}
                   >
-                    View Details
+                    Detayları Görüntüle
                   </button>
                 </div>
               </div>

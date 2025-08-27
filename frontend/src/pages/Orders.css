@@ -165,6 +165,31 @@
   color: #666;
 }
 
+.btn-cancel-order {
+  display: inline-block;
+  padding: 10px 18px;
+  margin-top: 15px;
+  margin-left: 10px; /* Opsiyonel: Diğer butonlarla arasına boşluk bırakmak için */
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.btn-cancel-order:hover:not(:disabled) {
+  background: #c82333;
+}
+
+.btn-cancel-order:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -175,9 +200,10 @@
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* İçeriği yukarı hizala */
   z-index: 1000;
   padding: 20px;
+  padding-top: 5vh; /* Modalı ekranın üstünden biraz boşluk bırakarak başlat */
 }
 
 .modal-content {
@@ -188,6 +214,9 @@
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  /* margin-top: -10vh; Kaldırıldı, top özelliği kullanılacak */
+  position: relative;
+  top: 0; /* align-items: flex-start ile birlikte çalışacak */
 }
 
 .modal-header {
@@ -230,6 +259,29 @@
 
 .modal-body {
   padding: 30px;
+}
+
+.cancel-reason-select,
+.other-reason-textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Padding ve border'ı genişliğe dahil et */
+}
+
+.other-reason-textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .order-details-section {

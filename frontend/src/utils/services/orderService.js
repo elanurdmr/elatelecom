@@ -15,3 +15,11 @@ export const updateOrder = async (id, orderData) => {
 export const deleteOrder = async (id) => {
   return api(`/admin/orders/${id}`, 'DELETE');
 };
+
+export const cancelOrder = async (id, cancelReason) => {
+  return api(`/orders/${id}/cancel`, 'PUT', { cancelReason });
+};
+
+export const updateOrderStatus = async (id, status) => {
+  return api(`/admin/orders/${id}/status`, 'PUT', { status });
+};
