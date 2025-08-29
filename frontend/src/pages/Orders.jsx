@@ -75,7 +75,7 @@ const Orders = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await api('/orders/user', 'GET');
+      const response = await api('orders/user', 'GET');
       setOrders(response);
     } catch (err) {
       console.error('Failed to fetch orders:', err);

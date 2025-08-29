@@ -17,7 +17,11 @@ const api = async (endpoint, method = 'GET', body = null) => {
   };
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const normalizedBaseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+    const normalizedEndpoint = endpoint.startsWith('/') ? endpoint.slice(1) : endpoint;
+    const finalUrl = `${normalizedBaseUrl}/${normalizedEndpoint}`;
+
+    const response = await fetch(finalUrl, config);
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(errorText || `API request failed for ${endpoint}`);

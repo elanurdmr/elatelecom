@@ -37,12 +37,18 @@ const AdminDashboardHome = () => {
   // Helper to fetch product details for favorite IDs
   const fetchProductDetails = useCallback(async (productIds) => {
     try {
-      const products = await Promise.all(
-        productIds.map(id => api(`/products/${id}`, 'GET', null, token))
-      );
-      return products;
+      const productsPromises = productIds.map(async (id) => {
+        try {
+          return await api(`products/${id}`, 'GET', null, token);
+        } catch (err) {
+          console.warn(`Failed to fetch product details for ID ${id}:`, err);
+          return null; // Return null for failed individual product fetches
+        }
+      });
+      const products = await Promise.all(productsPromises);
+      return products.filter(Boolean); // Filter out any null values
     } catch (err) {
-      console.error("Failed to fetch product details for favorites:", err);
+      console.error("Failed to fetch product details for favorites overall:", err);
       return [];
     }
   }, [token]); // Add token to useCallback dependency array
@@ -51,16 +57,16 @@ const AdminDashboardHome = () => {
     const fetchData = async () => {
       try {
         // Fetch User Count and Recent Users
-        const users = await api('/admin/users', 'GET', null, token);
+        const users = await api('admin/users', 'GET', null, token);
         setUserCount(users.length);
         setRecentUsers(users.slice(0, 5)); // Get top 5 recent users
 
         // Fetch Product Count
-        const products = await api('/products', 'GET', null, token); // Using non-admin endpoint for products
+        const products = await api('products', 'GET', null, token); // Using non-admin endpoint for products
         setProductCount(products.length);
 
         // Fetch Order Count and Recent Orders
-        const orders = await api('/admin/orders', 'GET', null, token);
+        const orders = await api('admin/orders', 'GET', null, token);
         setOrderCount(orders.length);
         setRecentOrders(orders.slice(0, 5)); // Get top 5 recent orders
 

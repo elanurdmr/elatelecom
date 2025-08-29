@@ -15,7 +15,7 @@ function ProductDetails() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const data = await api("/products"); // Removed '/api' prefix
+        const data = await api("products"); // Removed '/api' prefix
         const p = data.find(x => String(x.id) === String(id));
         setProduct(p);
       } catch (err) {
